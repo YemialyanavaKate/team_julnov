@@ -1,11 +1,20 @@
-### Java Spring template project
+# JE 140
 
-This project is based on a GitLab [Project Template](https://docs.gitlab.com/ee/gitlab-basics/create-project.html).
+### Формат МР(запросов на слияни веток)
+  * Название ветки должно соотвествовать паттеру
+    * "<фамилия>-<цифра>-<цифра>" (все буквы с строчные) - "wasileuski-1-3"
+  * Название(title) МР
+    * "<ITA>:<фамилия> <цифра>-<цифра>" - "ITA: wasileuski 1-3"
 
-Improvements can be proposed in the [original project](https://gitlab.com/gitlab-org/project-templates/spring).
+## Задачи Первого модуля
 
-### CI/CD with Auto DevOps
-
-This template is compatible with [Auto DevOps](https://docs.gitlab.com/ee/topics/autodevops/).
-
-If Auto DevOps is not already enabled for this project, you can [turn it on](https://docs.gitlab.com/ee/topics/autodevops/#enabling-auto-devops) in the project settings.
+### 1.1 Задание
+  * Создание мультимодульного проекта с помощью Maven
+  * Название модулей: 
+    * web-app,
+    * data_base-app, 
+    * service-app
+  * В каждом модуле должна быть идентичная структура корневых каталогов
+      * /src/main/java/by/ita/je/
+      * /src/test/java/by/ita/je/
+  * Каждый модуль полностью независим и собирается в jar файл
