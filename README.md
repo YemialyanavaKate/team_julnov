@@ -57,3 +57,161 @@
   * Удалите лишние каталоги, что бы структура кода выглядила так:
   
   ![alt text](изображение-1.png)
+
+  ### 2.1 Задание
+* Соблюдайте правила "слоения" и структуру папок в проекте, `SOLID` принципы!
+* В модуле `data-base-app` создать 4 сущности `MODEL`, разного назначения.
+    * Пользоваться Ломбоком, нельзя! см пример https://projectlombok.org/features/Builder
+    * В каждой сущности должно быть минимум 8 полей, не больше 2 одинаковых типов полей на класс.
+    * Сущности должны собираться через паттерн `Builder`.
+    * В каждой сущности должно быть одно поле типа `ZoneDateTime`.
+* В модуле `data-base-app` создать 4 сущности `DTO` согласно вашим моделям.
+    * В ваших `DTO` не должны быть показано поле `ZoneDateTime` типа.
+    * `DTO` должны иметь в общем на 2 поля меньше чем соответствующая `MODEL`. 6 полей минимум.
+    * `DTO` должен так же конструироваться билдером.
+* В модуле `data-base-app` создать `REST` контроллеры, для `CRUD` задач под каждую созданную `DTO`(отдельный класс контроллер для каждой дто).
+    * Чтение всех записей, удаление списком.
+    * Следите за маппингами ваших методов контроллера, разделителем слов может быть только "/", все слова в маппинге пишутся строго строчными буквами.
+    * Маппинг контроллеров должен содержать существительные/инфинитивы, говорящие о назначении эндпоинта.
+    * Контроллеры должны возвращать ответы `DTO` сущностями в формате `JSON`. https://www.json.org/json-en.html
+
+### 2.3 Задание
+  * Установите `Postman` и проверьте все ваши контроллеры.
+    * Создайте коллекцию в `Postman`, с папками для каждого из ваших контроллеров. (cм запись лекции)
+    * В каждой папке, должны быть сохранены все запросы на контроллер.
+    * Создайте папку `postman` в модуле `data-base-app` и экспортируйте туда свою коллекцию.
+
+### 2.4 Задание
+  * Вы можете перевести все ваши модели и дто на ломбок.
+  * Вы можете сделать это самостоятельно по гайду https://www.baeldung.com/intro-to-project-lombok
+  * В следующих заданиях можете полноценно использовать ломбок для ваших `POJO`.
+
+  ### 2.5 Задание
+* Необходимо добавить в модуль `data-base-app` работу с БД через `JDBCTemplate`.
+* Добавтьте необходимые зависимости в модуль
+```xml
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-jpa</artifactId>
+        </dependency>
+```
+Эта зависимость позволяет вам использовать разлиные библиотеки для работы с БД в Спринг
+```xml
+        <dependency>
+            <groupId>com.h2database</groupId>
+            <artifactId>h2</artifactId>
+        </dependency>
+```
+Эта зависимость позволяет использовать одну из реализаций БД, для вашего приложения.
+* Настройте автоконфигурирование для вашей БД, добавьте настройки в `application.yml` примерно такие:
+```yaml
+spring:
+  datasource:
+    url: jdbc:h2:mem:testdb
+    username: sa
+    password: sa
+    driver-class-name: org.h2.Driver
+    initialization-mode: always
+  h2:
+    console:
+      enable: true
+      path: /h2-console
+      settings.web-allow-others: true
+```
+* Для каждой модели вам необходимо сделать скрипт создания и заполнения БД (см. запись лекции), пример:
+```sql
+CREATE TABLE ANIMAL(uuid CHAR(36) PRIMARY KEY, appeared TIMESTAMP WITH TIME ZONE, name VARCHAR(255), price DECIMAL, weight DECIMAL, size DECIMAL,isCarnivore BOOLEAN, isPredator BOOLEAN);
+INSERT TNTO ANIMAL(id, appeared, name, price, weight, size,isCarnivore, isPredator) VALUES (...);
+INSERT TNTO ANIMAL(id, appeared, name, price, weight, size,isCarnivore, isPredator) VALUES (...);
+INSERT TNTO ANIMAL(id, appeared, name, price, weight, size,isCarnivore, isPredator) VALUES (...);
+INSERT TNTO ANIMAL(id, appeared, name, price, weight, size,isCarnivore, isPredator) VALUES (...);
+```
+* В скриптах, должно быть добавленно как минимум 4 строк добавленния данных.
+
+### 2.6 Задание
+* Соблюдайте правила "слоения" и структуру папок в проекте, `SOLID` принципы!
+* В модуле `data-base-app` создайте новый слой для сервисов в папке `services`.
+* В папке `services` создайте компоненты для каждой из моделей соотвественно
+* Интегрируйте в компоненты сервисов `JDBCTemplate` где будете выполнять запросы к БД, с помощью SQL запросов
+  * jdbcTemplate.queryForObject(...) - для получениея записей
+```java
+  public Animal findAnimalById(UUID uuid) {
+    String sql = "SELECT * FROM ANIMAL WHERE uuid = ?";
+    return jdbcTemplate.queryForObject(sql, new RowMapper<Animal>() {
+        @Override
+        public Animal mapRow(ResultSet rs, int rowNum) throws SQLException {
+            UUID uuid = UUID.fromString(rs.getString("uuid"));
+            LocalDate appeared = rs.getDate("appeared").toLocalDate();
+            String name = rs.getString("name");
+            double price = rs.getDouble("price");
+            double weight = rs.getDouble("weight");
+            double size = rs.getDouble("size");
+            boolean isCarnivore = rs.getBoolean("isCarnivore");
+            boolean isPredator = rs.getBoolean("isPredator");
+
+            return new Animal(uuid, appeared, name, price, weight, size, isCarnivore, isPredator);
+        }
+    }, uuid);
+}
+```
+  * jdbcTemplate.update(...) - для изменения записей
+```java
+public Animal updateAnimal(Animal animal) {
+    String sql = "UPDATE ANIMAL SET appeared = ?, name = ?, price = ?, weight = ?, size = ?, isCarnivore = ?, isPredator = ? WHERE uuid = ?";
+    jdbcTemplate.update(sql, animal.getAppeared(), animal.getName(), animal.getPrice(), animal.getWeight(), animal.getSize(), animal.isCarnivore(), animal.isPredator(), animal.getUuid());
+    return findAnimalById(animal.getUuid());
+}
+```
+```java
+public Animal deleteAnimal(UUID uuid) {
+        Animal animal = findAnimalById(animal.getUuid());
+        String sql = "DELETE FROM ANIMAL WHERE uuid = ?";
+        jdbcTemplate.update(sql, animal.getUuid());
+        return animal;
+    }
+```
+```java
+public Animal insertAnimal(Animal animal) {
+        String sql = "INSERT INTO ANIMAL (uuid, appeared, name, price, weight, size, isCarnivore, isPredator) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+        jdbcTemplate.update(sql, animal.getUuid(), animal.getAppeared(), animal.getName(), animal.getPrice(), animal.getWeight(), animal.getSize(), animal.isCarnivore(), animal.isPredator());
+        return findAnimalById(animal.getUuid());
+    }
+```
+```java
+    public List<Animal> readAll() {
+        return jdbcTemplate.queryForList("SELECT * FROM ANIMAL", Animal.class);
+    }
+```
+* После того как вы реализовали методы сервисов, вам нужно интегрировать ваши сервисы к вашим контроллерам соответственно
+* Тк возвращаемые значения сервисов не совпадают с типами возвращаемыми в контроллерах, вам нужно реализовать механизм маппинга.
+Пример:
+```java
+public class AnimalMapper {
+
+    public static AnimalDTO toDTO(Animal animal) {
+        return new AnimalDTO(
+            animal.getName(),
+            animal.getUuid(),
+            (float) animal.getWeight(), // Преобразование double в Float
+            (float) animal.getSize(),   // Преобразование double в Float
+            animal.isCarnivore(),
+            animal.isPredator()
+        );
+    }
+
+    // Если нужен маппер из DTO в модель
+    public static Animal toEntity(AnimalDTO animalDTO) {
+        return new Animal(
+            animalDTO.getUuid(),
+            null, // Поле appeared не доступно в DTO, можно передать null или другой дефолтный объект
+            animalDTO.getName(),
+            0.0, // Поле price не доступно в DTO, можно передать 0.0 или другой дефолтный объект
+            animalDTO.getWeight() != null ? animalDTO.getWeight() : 0.0, // Преобразование Float в double
+            animalDTO.getSize() != null ? animalDTO.getSize() : 0.0,     // Преобразование Float в double
+            animalDTO.getIsCarnivore() != null && animalDTO.getIsCarnivore(),
+            animalDTO.getIsPredator() != null && animalDTO.getIsPredator()
+        );
+    }
+}
+```
+* маппер интегрируется в контроллер и участвоет в преобразовании ответов от сервиса в ДТО.
