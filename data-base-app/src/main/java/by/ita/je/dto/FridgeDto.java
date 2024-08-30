@@ -9,7 +9,7 @@ import java.math.BigDecimal;
 @RequiredArgsConstructor
 @Getter
 @Builder
-//@AllArgsConstructor
+@AllArgsConstructor
 public class FridgeDto {
     private final String type;
     private final String description;
