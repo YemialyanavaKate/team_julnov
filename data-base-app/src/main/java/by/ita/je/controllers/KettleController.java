@@ -1,14 +1,21 @@
 package by.ita.je.controllers;
 
 import by.ita.je.dto.KettleDto;
+import by.ita.je.services.KettleService;
 import org.springframework.web.bind.annotation.*;
 import java.math.BigDecimal;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping(path = "/kettle")
 public class KettleController {
+    private final KettleService kettleService;
+
+    public KettleController(KettleService kettleService) {
+        this.kettleService = kettleService;
+    }
 
     @PostMapping("/create")
     public KettleDto create(){
@@ -35,8 +42,8 @@ public class KettleController {
     }
 
     @GetMapping("/read/all")
-    public List<KettleDto> readAll(){
-        return Collections.emptyList();
+    public List<Map<String, Object>> readAll(){
+        return kettleService.readALL();
     }
 
     @PutMapping("/update")
