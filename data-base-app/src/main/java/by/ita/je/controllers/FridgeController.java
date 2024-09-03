@@ -1,14 +1,22 @@
 package by.ita.je.controllers;
 
 import  by.ita.je.dto.FridgeDto;
+import by.ita.je.services.FridgeService;
 import org.springframework.web.bind.annotation.*;
 import java.math.BigDecimal;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping(path = "/fridge")
 public class FridgeController {
+    private  final FridgeService fridgeService;
+
+    public FridgeController(FridgeService fridgeService) {
+        this.fridgeService = fridgeService;
+    }
+
 
     @PostMapping("/create")
     public FridgeDto create(){
@@ -35,8 +43,8 @@ public class FridgeController {
     }
 
     @GetMapping("/read/all")
-    public List<FridgeDto> readAll(){
-        return Collections.emptyList();
+    public List<Map<String, Object>> readAll(){
+        return fridgeService.readALL();
     }
 
     @PutMapping("/update")

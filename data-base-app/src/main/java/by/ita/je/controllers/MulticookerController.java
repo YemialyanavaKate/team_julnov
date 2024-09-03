@@ -1,14 +1,22 @@
 package by.ita.je.controllers;
 
 import by.ita.je.dto.MulticookerDto;
+import by.ita.je.services.MulticookerService;
 import org.springframework.web.bind.annotation.*;
 import java.math.BigDecimal;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping(path = "/multicooker")
 public class MulticookerController {
+    private final MulticookerService multicookerService;
+
+    public MulticookerController(MulticookerService multicookerService) {
+        this.multicookerService = multicookerService;
+    }
+
 
     @PostMapping("/create")
     public MulticookerDto create(){
@@ -35,8 +43,8 @@ public class MulticookerController {
     }
 
     @GetMapping("/read/all")
-    public List<MulticookerDto> readAll(){
-        return Collections.emptyList();
+    public List<Map<String, Object>> readAll(){
+        return multicookerService.readALL();
     }
 
     @PutMapping("/update")

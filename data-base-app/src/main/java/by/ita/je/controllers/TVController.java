@@ -1,14 +1,23 @@
 package by.ita.je.controllers;
 
 import by.ita.je.dto.TVDto;
+import by.ita.je.services.TVService;
 import org.springframework.web.bind.annotation.*;
 import java.math.BigDecimal;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping(path = "/tv")
 public class TVController {
+
+    private final TVService tvService;
+
+    public TVController(TVService tvService) {
+        this.tvService = tvService;
+    }
+
 
     @PostMapping("/create")
     public TVDto create(){
@@ -35,8 +44,8 @@ public class TVController {
     }
 
     @GetMapping("/read/all")
-    public List<TVDto> readAll(){
-        return Collections.emptyList();
+    public List<Map<String, Object>> readAll(){
+        return tvService.readALL();
     }
 
     @PutMapping("/update")
