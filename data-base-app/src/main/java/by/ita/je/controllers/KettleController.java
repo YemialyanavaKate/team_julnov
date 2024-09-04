@@ -1,10 +1,13 @@
 package by.ita.je.controllers;
 
 import by.ita.je.dto.KettleDto;
+import by.ita.je.mappers.KettleMapper;
+import by.ita.je.models.Kettle;
 import by.ita.je.services.KettleService;
 import org.springframework.web.bind.annotation.*;
+
 import java.math.BigDecimal;
-import java.util.Collections;
+import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Map;
 
@@ -19,26 +22,22 @@ public class KettleController {
 
     @PostMapping("/create")
     public KettleDto create(){
-        return KettleDto.builder()
-                .type("Kettle")
-                .color("black")
+        Kettle kettle = Kettle.builder()
+                .type("glass")
+                .color("blue")
                 .isElectric(false)
-                .isInduction(true)
-                .price(BigDecimal.valueOf(500.5))
-                .number(2)
+                .isInduction(false)
+                .price(BigDecimal.valueOf(30.33))
+                .energy('A')
+                .registered(ZonedDateTime.now())
                 .build();
+        Kettle kettleNew = kettleService.insertKettle(kettle);
+        return KettleMapper.toDTO(kettleNew);
     }
 
     @GetMapping("/read")
-    public KettleDto read(){
-        return KettleDto.builder()
-                .type("Kettle")
-                .color("black")
-                .isElectric(false)
-                .isInduction(true)
-                .price(BigDecimal.valueOf(500.5))
-                .number(2)
-                .build();
+    public KettleDto read(@RequestParam Integer number){
+        return KettleMapper.toDTO(kettleService.findKettleByNumber(number));
     }
 
     @GetMapping("/read/all")
@@ -48,22 +47,19 @@ public class KettleController {
 
     @PutMapping("/update")
     public KettleDto update(){
-        return KettleDto.builder()
-                .type("Kettle")
-                .color("white")
-                .isElectric(true)
+        Kettle kettle = Kettle.builder()
+                .type("glass")
+                .color("blue")
+                .isElectric(false)
                 .isInduction(false)
-                .price(BigDecimal.valueOf(1100.99))
-                .number(2)
+                .price(BigDecimal.valueOf(30.33))
+                .energy('A')
+                .registered(ZonedDateTime.now())
                 .build();
+        return KettleMapper.toDTO(kettleService.updateKettle(kettle));
     }
     @DeleteMapping("/delete")
-    public KettleDto delete(){
-        return KettleDto.builder().build();
-    }
-
-    @DeleteMapping("/delete/all")
-    public List<KettleDto> deleteAll(){
-        return Collections.emptyList();
+    public KettleDto delete(Integer number){
+        return KettleMapper.toDTO(kettleService.deleteKettle(number));
     }
 }
