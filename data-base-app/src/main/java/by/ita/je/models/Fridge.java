@@ -4,12 +4,9 @@ import lombok.*;
 import java.math.BigDecimal;
 import java.time.ZonedDateTime;
 
-
-@Getter
-@Setter
-@NoArgsConstructor
+@Data
 @Builder
-@ToString
+@NoArgsConstructor
 @AllArgsConstructor
 public class Fridge {
     private String type;

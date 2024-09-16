@@ -15,4 +15,17 @@ public class MulticookerMapper {
                 multicooker.getNumber()
         );
     }
+
+    public static Multicooker toEntity(MulticookerDto multicookerDto){
+        return new Multicooker(
+                multicookerDto.getType(),
+                multicookerDto.getDescription(),
+                multicookerDto.getIsTouchScreen(),
+                multicookerDto.getNumberModes(),
+                multicookerDto.getPrice(),
+                multicookerDto.getNumber(),
+                null,
+                null
+        );
+    }
 }

@@ -58,7 +58,8 @@
   
   ![alt text](изображение-1.png)
 
-  ### 2.1 Задание
+## Задачи второго модуля
+### 2.1 Задание
 * Соблюдайте правила "слоения" и структуру папок в проекте, `SOLID` принципы!
 * В модуле `data-base-app` создать 4 сущности `MODEL`, разного назначения.
     * Пользоваться Ломбоком, нельзя! см пример https://projectlombok.org/features/Builder
@@ -86,7 +87,7 @@
   * Вы можете сделать это самостоятельно по гайду https://www.baeldung.com/intro-to-project-lombok
   * В следующих заданиях можете полноценно использовать ломбок для ваших `POJO`.
 
-  ### 2.5 Задание
+### 2.5 Задание
 * Необходимо добавить в модуль `data-base-app` работу с БД через `JDBCTemplate`.
 * Добавтьте необходимые зависимости в модуль
 ```xml
@@ -114,7 +115,7 @@ spring:
     initialization-mode: always
   h2:
     console:
-      enable: true
+      enabled: true
       path: /h2-console
       settings.web-allow-others: true
 ```
@@ -215,3 +216,163 @@ public class AnimalMapper {
 }
 ```
 * маппер интегрируется в контроллер и участвоет в преобразовании ответов от сервиса в ДТО.
+
+### 2.7 Задание
+* Необходимо написать Unit тесты для публичных методов для все сервисов в пакете `by.ita.je.service`
+* Тесты должны находиться в папке `src/test/java/by/ita/je/service`
+* Шаблон для тестов должен выглядить примерно так:
+
+```java
+@ExtendWith(MockitoExtension.class) // расширение позволяющее использовать механизм мокирования
+class SomeServiceTest { // класс теста должен иеменоваться `<Имя компонента>Test`
+
+    @Test
+    void methodNameTest_expectedResult() { // название теста должно состоять из `<имени метода>_then_<результат проверки в 1-2 слова>`
+      // тело теста
+    }
+}
+```
+* На каждый публичный метод сервиса должен быть написан как минимум:
+  * 1 тест (Happy path) на основную логику в методе
+  * 0-1 тест на другие варианты логики (см лекцию)
+  * 0-1 тест на каждое исключение которое может быть выброшено в методе или выброшено обращением в компонент, используемый сервисом
+* Ориентировачная структура теста:
+```java
+  @Test
+  void methodNameTest_expectedResult() { // название теста должно состоять из `<имени метода>_<результат проверки в 1-2 слова>`
+    // описание вызовов моков
+
+    // вызов тестируемого метода
+
+    // сверка полученных результато
+
+    // сверка задействованных моков
+  }
+```
+* Для компонентов которые инициализированы в сервис последством DI нужно использовать моки как замена контектса
+```java
+@ExtendWith(MockitoExtension.class)
+class BlushServiceTest {
+
+    @Mock // мокируем компоненты из компазиции тестируемого компонента
+    private JdbcTemplate jdbcTemplate;
+
+    @InjectMocks // аннотация тестируемого компонента
+    private BlushService service;
+}
+```
+* В качестве ориентира можно использовать такие примеры:
+Сервис который нужно протестировать
+```java
+@Service
+public class BlushService {
+
+    private final JdbcTemplate jdbcTemplate;
+
+    public BlushService(JdbcTemplate jdbcTemplate) {
+        this.jdbcTemplate = jdbcTemplate;
+    }
+
+    public Blush deleteBlush(UUID uuid) {
+        Blush blush = findBlushById(uuid);
+        if (blush == null) {
+            return null;
+        }
+
+        String sql = "DELETE FROM BLUSH WHERE uuid = ?";
+        jdbcTemplate.update(sql, blush.getUuid());
+        return blush;
+    }
+}
+```
+Тесты для этого сервиса будут выглядеть примерно так:
+```java
+     @Test
+    void deleteBlush_then_return() {
+        UUID uuid = UUID.randomUUID();
+
+        Mockito.when(
+                jdbcTemplate.queryForObject(
+                        any(String.class), // any (...) использовать в задании нельзя
+                        any(RowMapper.class), // any (...) использовать в задании нельзя
+                        any(UUID.class) // any (...) использовать в задании нельзя
+                )
+        ).thenReturn(
+                Blush.builder() // возвращаемый обьект должен быть описан полностью
+                        .uuid(uuid)
+                        .build()
+        );
+
+        Mockito.when(
+                jdbcTemplate.update(
+                        any(String.class), // any (...) использовать в задании нельзя
+                        any(UUID.class) // any (...) использовать в задании нельзя
+                )
+        ).thenReturn(1);
+
+        Blush actual = service.deleteBlush(uuid);
+
+        Assertions.assertEquals(actual, Blush.builder().uuid(uuid).build()); 
+    }
+
+    @Test
+    void deleteBlush_then_return_null() {
+        UUID uuid = UUID.randomUUID();
+
+        Mockito.when(
+                jdbcTemplate.queryForObject(
+                        any(String.class), // any (...) использовать в задании нельзя
+                        any(RowMapper.class), // any (...) использовать в задании нельзя
+                        any(UUID.class) // any (...) использовать в задании нельзя
+                )
+        ).thenReturn(
+                null
+        );
+
+        Blush actual = service.deleteBlush(uuid);
+
+        Assertions.assertEquals(actual, null);
+
+        Mockito.verify(jdbcTemplate, new Times(1)).queryForObject(
+                any(String.class), // any (...) использовать в задании нельзя
+                any(RowMapper.class), // any (...) использовать в задании нельзя
+                any(UUID.class) // any (...) использовать в задании нельзя
+        ); 
+        Mockito.verify(jdbcTemplate, new Times(0)).update(
+                any(String.class), // any (...) использовать в задании нельзя
+                any(UUID.class) // any (...) использовать в задании нельзя
+        );
+    }
+
+    @Test
+    void deleteBlush_then_throws_exception() {
+        UUID uuid = UUID.randomUUID();
+
+        Mockito.when(
+                jdbcTemplate.queryForObject(
+                        any(String.class), // any (...) использовать в задании нельзя
+                        any(RowMapper.class), // any (...) использовать в задании нельзя
+                        any(UUID.class) // any (...) использовать в задании нельзя
+                )
+        ).thenReturn(
+                Blush.builder().uuid(uuid).build()
+        );
+
+        Mockito.when(
+                jdbcTemplate.update(
+                        any(String.class), // any (...) использовать в задании нельзя
+                        any(UUID.class) // any (...) использовать в задании нельзя
+                )
+        ).thenThrow(
+                new DataAccessException("Boo") {
+                    @Override
+                    public String getMessage() {
+                        return super.getMessage();
+                    }
+                }
+        );
+
+        Assertions.assertThrows(DataAccessException.class, () -> service.deleteBlush(uuid));
+    }
+```
+* Важный критерий!!! Тесты должны "реагировать" на изменения в коде методов компонентов. Это показатель качества тестов

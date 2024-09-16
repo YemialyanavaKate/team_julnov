@@ -15,4 +15,17 @@ public class KettleMapper {
                 kettle.getNumber()
         );
     }
+
+    public static Kettle toEntity(KettleDto kettleDto){
+        return new Kettle(
+                kettleDto.getType(),
+                kettleDto.getColor(),
+                kettleDto.getIsElectric(),
+                kettleDto.getIsInduction(),
+                kettleDto.getPrice(),
+                kettleDto.getNumber(),
+                null,
+                null
+        );
+    }
 }

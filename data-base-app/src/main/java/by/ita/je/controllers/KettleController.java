@@ -7,9 +7,10 @@ import by.ita.je.services.KettleService;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.List;
-import java.util.Map;
 
 @RestController
 @RequestMapping(path = "/kettle")
@@ -23,6 +24,7 @@ public class KettleController {
     @PostMapping("/create")
     public KettleDto create(){
         Kettle kettle = Kettle.builder()
+                .number(5)
                 .type("glass")
                 .color("blue")
                 .isElectric(false)
@@ -41,25 +43,32 @@ public class KettleController {
     }
 
     @GetMapping("/read/all")
-    public List<Map<String, Object>> readAll(){
-        return kettleService.readALL();
+    public List<KettleDto> readAll(){
+        return kettleService.readALL().stream().map(KettleMapper::toDTO).toList();
     }
 
     @PutMapping("/update")
-    public KettleDto update(){
-        Kettle kettle = Kettle.builder()
-                .type("glass")
-                .color("blue")
-                .isElectric(false)
-                .isInduction(false)
-                .price(BigDecimal.valueOf(30.33))
-                .energy('A')
-                .registered(ZonedDateTime.now())
-                .build();
-        return KettleMapper.toDTO(kettleService.updateKettle(kettle));
+    public KettleDto update(@RequestParam Integer number){
+        Kettle kettle = kettleService.findKettleByNumber(number);
+        if (kettle == null) {
+            return null;
+        }
+
+        kettle.setType("glass");
+        kettle.setColor("pink");
+        kettle.setPrice(BigDecimal.valueOf(122.22));
+
+        Kettle updateKettle = kettleService.updateKettle(kettle);
+        return KettleMapper.toDTO(updateKettle);
     }
+
     @DeleteMapping("/delete")
-    public KettleDto delete(Integer number){
+    public KettleDto delete(@RequestParam Integer number){
         return KettleMapper.toDTO(kettleService.deleteKettle(number));
+    }
+
+    @DeleteMapping("/delete/all")
+    public void deleteAll(){
+        kettleService.deleteAll();
     }
 }
