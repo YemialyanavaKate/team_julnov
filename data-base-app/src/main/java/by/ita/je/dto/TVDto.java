@@ -3,10 +3,9 @@ package by.ita.je.dto;
 import lombok.*;
 
 import java.math.BigDecimal;
-
-@RequiredArgsConstructor
-@Getter
+@Data
 @Builder
+@NoArgsConstructor
 @AllArgsConstructor
 public class TVDto {
     private String type;
@@ -15,5 +14,4 @@ public class TVDto {
     private Integer diagonal;
     private BigDecimal price;
     private Integer number;
-
 }

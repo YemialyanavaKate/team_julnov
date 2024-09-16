@@ -5,14 +5,27 @@ import by.ita.je.models.TV;
 
 public class TVMapper {
 
-    public static TVDto toDTO(TV multicooker){
+    public static TVDto toDTO(TV tv){
         return new TVDto(
-                multicooker.getType(),
-                multicooker.getBrand(),
-                multicooker.getDiscount(),
-                multicooker.getDiagonal(),
-                multicooker.getPrice(),
-                multicooker.getNumber()
+                tv.getType(),
+                tv.getBrand(),
+                tv.getDiscount(),
+                tv.getDiagonal(),
+                tv.getPrice(),
+                tv.getNumber()
+        );
+    }
+
+    public static TV toEntity(TVDto tvDto){
+        return new TV(
+                tvDto.getType(),
+                tvDto.getBrand(),
+                tvDto.getDiscount(),
+                tvDto.getDiagonal(),
+                tvDto.getPrice(),
+                tvDto.getNumber(),
+                null,
+                null
         );
     }
 }

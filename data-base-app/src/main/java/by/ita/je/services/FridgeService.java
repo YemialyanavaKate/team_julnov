@@ -1,16 +1,15 @@
 package by.ita.je.services;
 
 import by.ita.je.models.Fridge;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.time.*;
+import java.time.ZonedDateTime;
 import java.util.List;
-import java.util.Map;
 
 @Service
 public class FridgeService {
@@ -19,44 +18,55 @@ public class FridgeService {
     public FridgeService(JdbcTemplate jdbcTemplate){
         this.jdbcTemplate = jdbcTemplate;
     }
+
     public Fridge findFridgeByNumber(Integer number){
         String sql = "SELECT * FROM FRIDGE WHERE number = ?";
-        return jdbcTemplate.queryForObject(sql, new RowMapper<Fridge>() {
-            @Override
-            public Fridge mapRow(ResultSet rs, int rowNum) throws SQLException {
-                Integer number = rs.getInt("number");
-                String type = rs.getString("type");
-                String description = rs.getString("description");
-                boolean discount = rs.getBoolean("discount");
-                boolean defect = rs.getBoolean("defect");
-                BigDecimal price = rs.getBigDecimal("price");
-                Character energy = rs.getString("energy").charAt(0);
-                ZonedDateTime registered = rs.getObject("registered", ZonedDateTime.class);
-
-                return new Fridge( type, description, discount, defect, price, number, energy, registered);
-            }
-        }, number);
+        try {
+            return jdbcTemplate.queryForObject(sql, (resultSet, rowNum) -> mapRow(resultSet), number);
+        } catch (EmptyResultDataAccessException e) {
+            return null;
+        }
     }
 
     public Fridge updateFridge(Fridge fridge){
-        String sql = "UPDATE FRIDGE SET type = 'slim', description = 'superSlim', discount = false, defect = false, price = '1000.8', energy = 'A', registered = '2010-10-10 10:10:54+02' WHERE number = 5";
-        jdbcTemplate.update(sql);
+        String sql = "UPDATE FRIDGE SET type = ?, description = ?, discount = ?, defect = ?, price = ?, energy = ?, registered = ? WHERE number = ?";
+        jdbcTemplate.update(sql, fridge.getType(), fridge.getDescription(), fridge.getDiscount(), fridge.getDefect(), fridge.getPrice(), fridge.getEnergy(), fridge.getRegistered(), fridge.getNumber());
         return findFridgeByNumber(fridge.getNumber());
     }
 
     public Fridge deleteFridge(Integer number) {
         Fridge fridgeDelete = findFridgeByNumber(number);
-        String sql = "DELETE FROM FRIDGE WHERE number = 5";
-        jdbcTemplate.update(sql);
+        String sql = "DELETE FROM FRIDGE WHERE number = ?";
+        jdbcTemplate.update(sql, fridgeDelete.getNumber());
         return fridgeDelete;
     }
+
     public Fridge insertFridge(Fridge fridge){
-        String sql = "INSERT INTO FRIDGE (number, type, description, discount, defect, price, energy, registered) VALUES (5, 'noFrost', 'super', true, false, '5000.88', 'A', '2010-10-10 10:10:54+02')";
-        jdbcTemplate.update(sql);
+        String sql = "INSERT INTO FRIDGE(number, type, description, discount, defect, price, energy, registered) " +
+                "VALUES (?, ?, ?, ?, ?, ?, ?, ?);";
+        jdbcTemplate.update(sql, fridge.getNumber(), fridge.getType(), fridge.getDescription(), fridge.getDiscount(), fridge.getDefect(), fridge.getPrice(), fridge.getEnergy(), fridge.getRegistered());
         return findFridgeByNumber(fridge.getNumber());
     }
 
-    public List<Map<String, Object>> readALL() {
-        return jdbcTemplate.queryForList("SELECT * FROM FRIDGE");
+    public List<Fridge> readALL() {
+        return jdbcTemplate.query("SELECT * FROM FRIDGE",(resultSet, rowNum) -> mapRow(resultSet));
+    }
+
+    public void deleteALL() {
+        String sql = "DELETE FROM FRIDGE";
+        jdbcTemplate.update(sql);
+    }
+
+    private Fridge mapRow(ResultSet rs) throws SQLException {
+        Integer number = rs.getInt("number");
+        String type = rs.getString("type");
+        String description = rs.getString("description");
+        boolean discount = rs.getBoolean("discount");
+        boolean defect = rs.getBoolean("defect");
+        BigDecimal price = rs.getBigDecimal("price");
+        Character energy = rs.getString("energy").charAt(0);
+        ZonedDateTime registered = rs.getObject("registered", ZonedDateTime.class);
+
+        return new Fridge( type, description, discount, defect, price, number, energy, registered);
     }
 }

@@ -1,14 +1,11 @@
 package by.ita.je.dto;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import lombok.*;
 
 import java.math.BigDecimal;
-@RequiredArgsConstructor
-@Getter
+@Data
 @Builder
+@NoArgsConstructor
 @AllArgsConstructor
 public class KettleDto {
     private String type;

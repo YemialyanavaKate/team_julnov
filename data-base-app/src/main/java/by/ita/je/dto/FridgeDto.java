@@ -1,22 +1,19 @@
 package by.ita.je.dto;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import java.math.BigDecimal;
+import lombok.*;
 
-@RequiredArgsConstructor
-@Getter
+import java.math.BigDecimal;
+@Data
 @Builder
-//@AllArgsConstructor
+@NoArgsConstructor
+@AllArgsConstructor
 public class FridgeDto {
-    private final String type;
-    private final String description;
-    private final Boolean discount;
-    private final Boolean defect;
-    private final BigDecimal price;
-    private final Integer number;
+    private String type;
+    private String description;
+    private Boolean discount;
+    private Boolean defect;
+    private BigDecimal price;
+    private Integer number;
 }
 
 

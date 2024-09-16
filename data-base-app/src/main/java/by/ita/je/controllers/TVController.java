@@ -8,7 +8,6 @@ import org.springframework.web.bind.annotation.*;
 import java.math.BigDecimal;
 import java.time.ZonedDateTime;
 import java.util.List;
-import java.util.Map;
 
 @RestController
 @RequestMapping(path = "/tv")
@@ -24,12 +23,12 @@ public class TVController {
     @PostMapping("/create")
     public TVDto create(){
         TV tv = TV.builder()
+                .number(6)
                 .type("TV")
                 .brand("LG")
                 .discount(true)
                 .diagonal(15)
                 .price(BigDecimal.valueOf(1000.5))
-                .number(3)
                 .energy('A')
                 .registered(ZonedDateTime.now())
                 .build();
@@ -43,28 +42,31 @@ public class TVController {
     }
 
     @GetMapping("/read/all")
-    public List<Map<String, Object>> readAll(){
-        return tvService.readALL();
+    public List<TVDto> readAll(){
+        return tvService.readALL().stream().map(TVMapper::toDTO).toList();
     }
 
     @PutMapping("/update")
-    public TVDto update(){
-        TV tv = TV.builder()
-                .type("TV")
-                .brand("Horizont")
-                .discount(false)
-                .diagonal(10)
-                .price(BigDecimal.valueOf(100.5))
-                .number(3)
-                .energy('A')
-                .registered(ZonedDateTime.now())
-                .build();
+    public TVDto update(@RequestParam Integer number){
+        TV tv = tvService.findTVByNumber(number);
+        if (tv == null){
+            return null;
+        }
+
+        tv.setBrand("Philips");
+        tv.setDiagonal(42);
+        tv.setPrice(BigDecimal.valueOf(7000.01));
 
         return TVMapper.toDTO(tvService.updateTV(tv));
     }
 
     @DeleteMapping("/delete")
-    public TVDto delete(Integer number){
+    public TVDto delete(@RequestParam Integer number){
         return TVMapper.toDTO(tvService.deleteTV(number));
+    }
+
+    @DeleteMapping("/delete/all")
+    public void deleteAll(){
+        tvService.deleteAll();
     }
 }
