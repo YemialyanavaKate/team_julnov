@@ -16,9 +16,10 @@ import java.util.List;
 @RequestMapping(path = "/kettle")
 public class KettleController {
     private final KettleService kettleService;
-
-    public KettleController(KettleService kettleService) {
+    private final KettleMapper kettleMapper;
+    public KettleController(KettleService kettleService, KettleMapper kettleMapper) {
         this.kettleService = kettleService;
+        this.kettleMapper = kettleMapper;
     }
 
     @PostMapping("/create")
@@ -34,17 +35,17 @@ public class KettleController {
                 .registered(ZonedDateTime.now())
                 .build();
         Kettle kettleNew = kettleService.insertKettle(kettle);
-        return KettleMapper.toDTO(kettleNew);
+        return kettleMapper.toDTO(kettleNew);
     }
 
     @GetMapping("/read")
     public KettleDto read(@RequestParam Integer number){
-        return KettleMapper.toDTO(kettleService.findKettleByNumber(number));
+        return kettleMapper.toDTO(kettleService.findKettleByNumber(number));
     }
 
     @GetMapping("/read/all")
     public List<KettleDto> readAll(){
-        return kettleService.readALL().stream().map(KettleMapper::toDTO).toList();
+        return kettleService.readALL().stream().map(kettleMapper::toDTO).toList();
     }
 
     @PutMapping("/update")
@@ -59,12 +60,12 @@ public class KettleController {
         kettle.setPrice(BigDecimal.valueOf(122.22));
 
         Kettle updateKettle = kettleService.updateKettle(kettle);
-        return KettleMapper.toDTO(updateKettle);
+        return kettleMapper.toDTO(updateKettle);
     }
 
     @DeleteMapping("/delete")
     public KettleDto delete(@RequestParam Integer number){
-        return KettleMapper.toDTO(kettleService.deleteKettle(number));
+        return kettleMapper.toDTO(kettleService.deleteKettle(number));
     }
 
     @DeleteMapping("/delete/all")

@@ -14,9 +14,11 @@ import java.util.List;
 public class TVController {
 
     private final TVService tvService;
+    private final TVMapper tvMapper;
 
-    public TVController(TVService tvService) {
+    public TVController(TVService tvService, TVMapper tvMapper) {
         this.tvService = tvService;
+        this.tvMapper = tvMapper;
     }
 
 
@@ -33,17 +35,17 @@ public class TVController {
                 .registered(ZonedDateTime.now())
                 .build();
         TV tvNew = tvService.insertTV(tv);
-        return TVMapper.toDTO(tvNew);
+        return tvMapper.toDTO(tvNew);
     }
 
     @GetMapping("/read")
     public TVDto read(@RequestParam Integer number){
-        return TVMapper.toDTO(tvService.findTVByNumber(number));
+        return tvMapper.toDTO(tvService.findTVByNumber(number));
     }
 
     @GetMapping("/read/all")
     public List<TVDto> readAll(){
-        return tvService.readALL().stream().map(TVMapper::toDTO).toList();
+        return tvService.readALL().stream().map(tvMapper::toDTO).toList();
     }
 
     @PutMapping("/update")
@@ -57,12 +59,12 @@ public class TVController {
         tv.setDiagonal(42);
         tv.setPrice(BigDecimal.valueOf(7000.01));
 
-        return TVMapper.toDTO(tvService.updateTV(tv));
+        return tvMapper.toDTO(tvService.updateTV(tv));
     }
 
     @DeleteMapping("/delete")
     public TVDto delete(@RequestParam Integer number){
-        return TVMapper.toDTO(tvService.deleteTV(number));
+        return tvMapper.toDTO(tvService.deleteTV(number));
     }
 
     @DeleteMapping("/delete/all")

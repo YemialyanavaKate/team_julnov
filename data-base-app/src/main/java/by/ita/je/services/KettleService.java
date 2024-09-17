@@ -1,27 +1,26 @@
 package by.ita.je.services;
 
+import by.ita.je.mappers.RowMapperKettle;
 import by.ita.je.models.Kettle;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 
-import java.math.BigDecimal;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.time.ZonedDateTime;
 import java.util.List;
 
 @Service
 public class KettleService {
 
     private final JdbcTemplate jdbcTemplate;
-    public KettleService(JdbcTemplate jdbcTemplate){
+    private final RowMapperKettle rowMapperKettle;
+    public KettleService(JdbcTemplate jdbcTemplate, RowMapperKettle rowMapperKettle){
         this.jdbcTemplate = jdbcTemplate;
+        this.rowMapperKettle = rowMapperKettle;
     }
     public Kettle findKettleByNumber(Integer number){
         String sql = "SELECT * FROM KETTLE WHERE number = ?";
         try {
-            return jdbcTemplate.queryForObject(sql, (resultSet, rowNum) -> mapRow(resultSet), number);
+            return jdbcTemplate.queryForObject(sql, (resultSet, rowNum) -> rowMapperKettle.mapRow(resultSet), number);
         } catch (EmptyResultDataAccessException e) {
             return null;
         }
@@ -52,25 +51,11 @@ public class KettleService {
     }
 
     public List<Kettle> readALL() {
-        return jdbcTemplate.query("SELECT * FROM KETTLE",(resultSet, rowNum) -> mapRow(resultSet));
+        return jdbcTemplate.query("SELECT * FROM KETTLE",(resultSet, rowNum) -> rowMapperKettle.mapRow(resultSet));
     }
 
     public void deleteAll() {
         String sql = "DELETE FROM KETTLE";
         jdbcTemplate.update(sql);
-    }
-
-
-    private Kettle mapRow(ResultSet resultSet) throws SQLException {
-        Integer number = resultSet.getInt("number");
-        String type = resultSet.getString("type");
-        String color = resultSet.getString("color");
-        boolean isElectric = resultSet.getBoolean("isElectric");
-        boolean isInduction = resultSet.getBoolean("isInduction");
-        BigDecimal price = resultSet.getBigDecimal("price");
-        Character energy = resultSet.getString("energy").charAt(0);
-        ZonedDateTime registered = resultSet.getObject("registered", ZonedDateTime.class);
-
-        return new Kettle( type, color, isElectric, isInduction, price, number, energy, registered);
     }
 }

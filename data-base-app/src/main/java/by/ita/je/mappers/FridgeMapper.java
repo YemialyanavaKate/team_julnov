@@ -2,10 +2,12 @@ package by.ita.je.mappers;
 
 import by.ita.je.dto.FridgeDto;
 import by.ita.je.models.Fridge;
+import org.springframework.stereotype.Component;
 
+@Component
 public class FridgeMapper {
 
-    public static FridgeDto toDTO(Fridge fridge) {
+    public FridgeDto toDTO(Fridge fridge) {
         return new FridgeDto(
                 fridge.getType(),
                 fridge.getDescription(),
@@ -15,7 +17,7 @@ public class FridgeMapper {
                 fridge.getNumber()
         );
     }
-        public static Fridge toEntity(FridgeDto fridgeDto){
+        public Fridge toEntity(FridgeDto fridgeDto){
             return new Fridge(
                     fridgeDto.getType(),
                     fridgeDto.getDescription(),

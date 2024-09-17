@@ -13,9 +13,11 @@ import java.util.List;
 @RequestMapping(path = "/multicooker")
 public class MulticookerController {
     private final MulticookerService multicookerService;
+    private final MulticookerMapper multicookerMapper;
 
-    public MulticookerController(MulticookerService multicookerService) {
+    public MulticookerController(MulticookerService multicookerService, MulticookerMapper multicookerMapper) {
         this.multicookerService = multicookerService;
+        this.multicookerMapper = multicookerMapper;
     }
 
     @PostMapping("/create")
@@ -32,17 +34,17 @@ public class MulticookerController {
                 .registered(ZonedDateTime.now())
                 .build();
         Multicooker multicookerNew = multicookerService.insertMulticooker(multicooker);
-        return MulticookerMapper.toDTO(multicookerNew);
+        return multicookerMapper.toDTO(multicookerNew);
     }
 
     @GetMapping("/read")
     public MulticookerDto read(@RequestParam Integer number){
-        return MulticookerMapper.toDTO(multicookerService.findMulticookerByNumber(number));
+        return multicookerMapper.toDTO(multicookerService.findMulticookerByNumber(number));
     }
 
     @GetMapping("/read/all")
     public List<MulticookerDto> readAll(){
-        return multicookerService.readALL().stream().map(MulticookerMapper::toDTO).toList();
+        return multicookerService.readALL().stream().map(multicookerMapper::toDTO).toList();
     }
 
     @PutMapping("/update")
@@ -57,12 +59,12 @@ public class MulticookerController {
         multicooker.setPrice(BigDecimal.valueOf(100.99));
 
         Multicooker multicookerNew = multicookerService.updateMulticooker(multicooker);
-        return MulticookerMapper.toDTO(multicookerNew);
+        return multicookerMapper.toDTO(multicookerNew);
     }
 
     @DeleteMapping("/delete")
     public MulticookerDto delete(Integer number){
-        return MulticookerMapper.toDTO(multicookerService.deleteMulticooker(number));
+        return multicookerMapper.toDTO(multicookerService.deleteMulticooker(number));
     }
 
     @DeleteMapping("/delete/all")
