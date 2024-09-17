@@ -2,10 +2,12 @@ package by.ita.je.mappers;
 
 import by.ita.je.dto.MulticookerDto;
 import by.ita.je.models.Multicooker;
+import org.springframework.stereotype.Component;
 
+@Component
 public class MulticookerMapper {
 
-    public static MulticookerDto toDTO(Multicooker multicooker){
+    public MulticookerDto toDTO(Multicooker multicooker){
         return new MulticookerDto(
                 multicooker.getType(),
                 multicooker.getDescription(),
@@ -16,7 +18,7 @@ public class MulticookerMapper {
         );
     }
 
-    public static Multicooker toEntity(MulticookerDto multicookerDto){
+    public Multicooker toEntity(MulticookerDto multicookerDto){
         return new Multicooker(
                 multicookerDto.getType(),
                 multicookerDto.getDescription(),

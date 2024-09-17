@@ -1,28 +1,27 @@
 package by.ita.je.services;
 
+import by.ita.je.mappers.RowMapperFridge;
 import by.ita.je.models.Fridge;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 
-import java.math.BigDecimal;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.time.ZonedDateTime;
 import java.util.List;
 
 @Service
 public class FridgeService {
 
     private final JdbcTemplate jdbcTemplate;
-    public FridgeService(JdbcTemplate jdbcTemplate){
+    private final RowMapperFridge rowMapperFridge;
+    public FridgeService(JdbcTemplate jdbcTemplate, RowMapperFridge rowMapperFridge){
         this.jdbcTemplate = jdbcTemplate;
+       this.rowMapperFridge = rowMapperFridge;
     }
 
     public Fridge findFridgeByNumber(Integer number){
         String sql = "SELECT * FROM FRIDGE WHERE number = ?";
         try {
-            return jdbcTemplate.queryForObject(sql, (resultSet, rowNum) -> mapRow(resultSet), number);
+            return jdbcTemplate.queryForObject(sql, (resultSet, rowNum) -> rowMapperFridge.mapRow(resultSet), number);
         } catch (EmptyResultDataAccessException e) {
             return null;
         }
@@ -49,24 +48,11 @@ public class FridgeService {
     }
 
     public List<Fridge> readALL() {
-        return jdbcTemplate.query("SELECT * FROM FRIDGE",(resultSet, rowNum) -> mapRow(resultSet));
+        return jdbcTemplate.query("SELECT * FROM FRIDGE",(resultSet, rowNum) -> rowMapperFridge.mapRow(resultSet));
     }
 
     public void deleteALL() {
         String sql = "DELETE FROM FRIDGE";
         jdbcTemplate.update(sql);
-    }
-
-    private Fridge mapRow(ResultSet rs) throws SQLException {
-        Integer number = rs.getInt("number");
-        String type = rs.getString("type");
-        String description = rs.getString("description");
-        boolean discount = rs.getBoolean("discount");
-        boolean defect = rs.getBoolean("defect");
-        BigDecimal price = rs.getBigDecimal("price");
-        Character energy = rs.getString("energy").charAt(0);
-        ZonedDateTime registered = rs.getObject("registered", ZonedDateTime.class);
-
-        return new Fridge( type, description, discount, defect, price, number, energy, registered);
     }
 }

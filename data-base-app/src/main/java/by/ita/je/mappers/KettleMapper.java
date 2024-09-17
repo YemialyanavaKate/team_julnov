@@ -2,10 +2,12 @@ package by.ita.je.mappers;
 
 import by.ita.je.dto.KettleDto;
 import by.ita.je.models.Kettle;
+import org.springframework.stereotype.Component;
 
+@Component
 public class KettleMapper {
 
-    public static KettleDto toDTO(Kettle kettle){
+    public KettleDto toDTO(Kettle kettle){
         return new KettleDto(
                 kettle.getType(),
                 kettle.getColor(),
@@ -16,7 +18,7 @@ public class KettleMapper {
         );
     }
 
-    public static Kettle toEntity(KettleDto kettleDto){
+    public Kettle toEntity(KettleDto kettleDto){
         return new Kettle(
                 kettleDto.getType(),
                 kettleDto.getColor(),

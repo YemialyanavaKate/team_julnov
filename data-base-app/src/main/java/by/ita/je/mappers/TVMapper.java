@@ -2,10 +2,12 @@ package by.ita.je.mappers;
 
 import by.ita.je.dto.TVDto;
 import by.ita.je.models.TV;
+import org.springframework.stereotype.Component;
 
+@Component
 public class TVMapper {
 
-    public static TVDto toDTO(TV tv){
+    public TVDto toDTO(TV tv){
         return new TVDto(
                 tv.getType(),
                 tv.getBrand(),
@@ -16,7 +18,7 @@ public class TVMapper {
         );
     }
 
-    public static TV toEntity(TVDto tvDto){
+    public TV toEntity(TVDto tvDto){
         return new TV(
                 tvDto.getType(),
                 tvDto.getBrand(),

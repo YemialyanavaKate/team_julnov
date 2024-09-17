@@ -1,28 +1,27 @@
 package by.ita.je.services;
 
+import by.ita.je.mappers.RowMapperMulticooker;
 import by.ita.je.models.Multicooker;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 
-import java.math.BigDecimal;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.time.ZonedDateTime;
 import java.util.List;
 
 @Service
 public class MulticookerService {
 
     private final JdbcTemplate jdbcTemplate;
-    public MulticookerService(JdbcTemplate jdbcTemplate){
+    private final RowMapperMulticooker rowMapperMulticooker;
+    public MulticookerService(JdbcTemplate jdbcTemplate, RowMapperMulticooker rowMapperMulticooker){
         this.jdbcTemplate = jdbcTemplate;
+        this.rowMapperMulticooker = rowMapperMulticooker;
     }
 
     public Multicooker findMulticookerByNumber(Integer number){
         String sql = "SELECT * FROM MULTICOOKER WHERE number = ?";
         try {
-            return jdbcTemplate.queryForObject(sql, (resultSet, rowMap)-> mapRow(resultSet), number);
+            return jdbcTemplate.queryForObject(sql, (resultSet, rowMap)-> rowMapperMulticooker.mapRow(resultSet), number);
         } catch (EmptyResultDataAccessException e) {
             return null;
         }
@@ -48,24 +47,11 @@ public class MulticookerService {
         return findMulticookerByNumber(multicooker.getNumber());
     }
     public List<Multicooker> readALL() {
-        return jdbcTemplate.query("SELECT * FROM MULTICOOKER", (rs, rowNum) -> mapRow(rs));
+        return jdbcTemplate.query("SELECT * FROM MULTICOOKER", (rs, rowNum) -> rowMapperMulticooker.mapRow(rs));
     }
 
     public void deleteALL() {
         String sql = "DELETE FROM MULTICOOKER";
         jdbcTemplate.update(sql);
-    }
-
-    private Multicooker mapRow(ResultSet rs) throws SQLException {
-        Integer number = rs.getInt("number");
-        String type = rs.getString("type");
-        String description = rs.getString("description");
-        boolean isTouchScreen = rs.getBoolean("isTouchScreen");
-        Integer numberModes = rs.getInt("numberModes");
-        BigDecimal price = rs.getBigDecimal("price");
-        Character energy = rs.getString("energy").charAt(0);
-        ZonedDateTime registered = rs.getObject("registered", ZonedDateTime.class);
-
-        return new Multicooker( type, description, isTouchScreen, numberModes, price, number, energy, registered);
     }
 }

@@ -14,9 +14,11 @@ import java.util.List;
 public class FridgeController {
 
     private  final FridgeService fridgeService;
+    private final FridgeMapper fridgeMapper;
 
-    public FridgeController(FridgeService fridgeService) {
+    public FridgeController(FridgeService fridgeService, FridgeMapper fridgeMapper) {
         this.fridgeService = fridgeService;
+        this.fridgeMapper = fridgeMapper;
     }
 
     @PostMapping("/create")
@@ -32,17 +34,17 @@ public class FridgeController {
                 .registered(ZonedDateTime.now())
                 .build();
         Fridge fridgeNew = fridgeService.insertFridge(fridge);
-        return FridgeMapper.toDTO(fridgeNew);
+        return fridgeMapper.toDTO(fridgeNew);
     }
 
     @GetMapping("/read")
     public FridgeDto read(@RequestParam Integer number){
-        return FridgeMapper.toDTO(fridgeService.findFridgeByNumber(number));
+        return fridgeMapper.toDTO(fridgeService.findFridgeByNumber(number));
     }
 
     @GetMapping("/read/all")
     public List<FridgeDto> readAll(){
-        return fridgeService.readALL().stream().map(FridgeMapper::toDTO).toList();
+        return fridgeService.readALL().stream().map(fridgeMapper::toDTO).toList();
     }
 
     @PutMapping("/update")
@@ -56,12 +58,12 @@ public class FridgeController {
         fridge.setDefect(false);
         fridge.setPrice(BigDecimal.valueOf(1000.8));
 
-        return FridgeMapper.toDTO(fridgeService.updateFridge(fridge));
+        return fridgeMapper.toDTO(fridgeService.updateFridge(fridge));
     }
 
     @DeleteMapping("/delete")
     public FridgeDto delete(@RequestParam Integer number){
-        return FridgeMapper.toDTO(fridgeService.deleteFridge(number));
+        return fridgeMapper.toDTO(fridgeService.deleteFridge(number));
     }
 
     @DeleteMapping("/delete/all")
