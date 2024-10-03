@@ -5,7 +5,7 @@ import by.ita.je.models.Multicooker;
 import org.springframework.stereotype.Component;
 
 @Component
-public class MulticookerMapper {
+public class MulticookerMapperToDto {
 
     public MulticookerDto toDTO(Multicooker multicooker){
         return new MulticookerDto(

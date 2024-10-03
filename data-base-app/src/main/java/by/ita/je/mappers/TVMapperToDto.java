@@ -5,7 +5,7 @@ import by.ita.je.models.TV;
 import org.springframework.stereotype.Component;
 
 @Component
-public class TVMapper {
+public class TVMapperToDto {
 
     public TVDto toDTO(TV tv){
         return new TVDto(

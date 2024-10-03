@@ -46,7 +46,7 @@ private KettleService kettleService;
 
     @Test
     public void insert_then_return_correct_kettle(){
-        testKettle = buildKettle("glass", "blue", false, false, BigDecimal.valueOf(30.33), 'A', ZonedDateTime.parse("2023-12-26T20:28:33.213+02"));
+        Kettle testKettle = buildKettle("glass", "blue", false, false, BigDecimal.valueOf(30.33), 'A', ZonedDateTime.parse("2023-12-26T20:28:33.213+02"));
 
         Kettle insertKettle = kettleService.insertKettle(testKettle);
         Assertions.assertEquals("glass", insertKettle.getType());
@@ -83,7 +83,7 @@ private KettleService kettleService;
 
     @Test
     public void update_then_return_correct_kettle_after_insert(){
-        testKettle = buildKettle("glass", "blue", false, false, BigDecimal.valueOf(30.33), 'A', ZonedDateTime.parse("2023-12-26T20:28:33.213+02"));
+        Kettle testKettle = buildKettle("glass", "blue", false, false, BigDecimal.valueOf(30.33), 'A', ZonedDateTime.parse("2023-12-26T20:28:33.213+02"));
 
         kettleService.insertKettle(testKettle);
         Kettle updateKettleTest = Kettle.builder()

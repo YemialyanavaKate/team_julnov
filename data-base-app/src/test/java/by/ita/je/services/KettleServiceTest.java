@@ -1,6 +1,7 @@
 package by.ita.je.services;
 
 import by.ita.je.models.Kettle;
+import by.ita.je.repository.KettleJpa;
 import by.ita.je.services.utils.TestUtils;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -11,40 +12,29 @@ import org.mockito.Mockito;
 import org.mockito.internal.verification.Times;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.dao.DataAccessException;
-import org.springframework.dao.EmptyResultDataAccessException;
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.RowMapper;
 
 import java.math.BigDecimal;
 import java.time.ZonedDateTime;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class KettleServiceTest extends TestUtils {
     
     @Mock
-    private JdbcTemplate jdbcTemplate;
+    private KettleJpa kettleJpa;
 
     @InjectMocks
     private KettleService service;
 
     @Test
     void findKettleByNumber_then_return_notNull() {
-        testKettle = buildKettle("glass", "blue", false, false, BigDecimal.valueOf(30.33), 'A', ZonedDateTime.parse("2023-12-26T20:28:33.213+02"));
-
-        Mockito.when(jdbcTemplate.queryForObject(
-                        eq(SQL_SELECT_KETTLE),
-                        (RowMapper<Kettle>) argThat(argument -> argument instanceof RowMapper<?>),
-                        eq(number)
-                )
+        Kettle testKettle = buildKettle("glass", "notColor", false, false, BigDecimal.valueOf(80.5), 'B', ZonedDateTime.parse("2023-12-31T14:11:54+02"));
+        testKettle.setNumber(2);
+        Integer number = 2;
+        Mockito.when(kettleJpa.getById(number)
         ).thenReturn(testKettle);
 
         Kettle actual = service.findKettleByNumber(number);
@@ -52,21 +42,14 @@ class KettleServiceTest extends TestUtils {
         assertEquals(actual, testKettle);
 
         Mockito.verify(
-                jdbcTemplate, new Times(1)).queryForObject(
-                eq(SQL_SELECT_KETTLE),
-                (RowMapper<Kettle>) argThat(argument -> argument instanceof RowMapper<?>),
-                eq(number)
-        );
+                kettleJpa, new Times(1)).getById(number);
     }
 
     @Test
     void findKettleByNumber_then_return_null() {
-
-        Mockito.when(jdbcTemplate.queryForObject(
-                        eq(SQL_SELECT_KETTLE),
-                        (RowMapper<Kettle>) argThat(argument -> argument instanceof RowMapper<?>),
-                        eq(number)
-                )
+        Random random = new Random();
+        Integer number = random.nextInt(Integer.MAX_VALUE);
+        Mockito.when(kettleJpa.getById(number)
         ).thenReturn(null);
 
         Kettle actual = service.findKettleByNumber(number);
@@ -74,373 +57,135 @@ class KettleServiceTest extends TestUtils {
         assertNull(actual);
 
         Mockito.verify(
-                jdbcTemplate, new Times(1)).queryForObject(
-                eq(SQL_SELECT_KETTLE),
-                (RowMapper<Kettle>) argThat(argument -> argument instanceof RowMapper<?>),
-                eq(number)
-        );
+                kettleJpa, new Times(1)).getById(number);
     }
 
     @Test
     void findKettleByNumber_then_trows_DataAccessException() {
-
-        Mockito.when(jdbcTemplate.queryForObject(
-                        eq(SQL_SELECT_KETTLE),
-                        (RowMapper<Kettle>) argThat(argument -> argument instanceof RowMapper<?>),
-                        eq(number)
-                )
-        ).thenThrow(new DataAccessException("There exception") {});
+        Random random = new Random();
+        Integer number = random.nextInt(Integer.MAX_VALUE);
+        Mockito.when(kettleJpa.getById(number)
+        ).thenThrow(new DataAccessException("") {});
 
         Assertions.assertThrows(DataAccessException.class,() -> service.findKettleByNumber(number));
 
         Mockito.verify(
-                jdbcTemplate, new Times(1)).queryForObject(
-                eq(SQL_SELECT_KETTLE),
-                (RowMapper<Kettle>) argThat(argument -> argument instanceof RowMapper<?>),
-                eq(number)
-        );
-    }
-
-    @Test
-    void findKettleByNumber_then_trows_EmptyResultDataAccessException() {
-
-        Mockito.when(jdbcTemplate.queryForObject(
-                        eq(SQL_SELECT_KETTLE),
-                        (RowMapper<Kettle>) argThat(argument -> argument instanceof RowMapper<?>),
-                        eq(number)
-                )
-        ).thenThrow(new EmptyResultDataAccessException(1));
-
-        Kettle actual = service.findKettleByNumber(number);
-
-        assertNull(actual);
-
-        Mockito.verify(
-                jdbcTemplate, new Times(1)).queryForObject(
-                eq(SQL_SELECT_KETTLE),
-                (RowMapper<Kettle>) argThat(argument -> argument instanceof RowMapper<?>),
-                eq(number)
-        );
+                kettleJpa, new Times(1)).getById(number);
     }
 
     @Test
     void updateKettle_then_return() {
-        updateKettle = buildKettle("glass", "pink", true, true, BigDecimal.valueOf(122.22), 'A', ZonedDateTime.parse("2011-11-11T11:11:11+02"));
+        Kettle updateKettle = buildKettle("glass", "pink", false, false, BigDecimal.valueOf(122.22), 'B', ZonedDateTime.parse("2023-12-31T14:11:54+02"));
 
-        Mockito.when(jdbcTemplate.update(
-                eq(SQL_UPDATE_KETTLE),
-                eq(updateKettle.getType()),
-                eq(updateKettle.getColor()),
-                eq(updateKettle.getIsElectric()),
-                eq(updateKettle.getIsInduction()),
-                eq(updateKettle.getPrice()),
-                eq(updateKettle.getEnergy()),
-                eq(updateKettle.getRegistered()),
-                eq(updateKettle.getNumber())
-                )
-        ).thenReturn(1);
+        Mockito.when(service.findKettleByNumber(updateKettle.getNumber())
+        ).thenReturn(updateKettle);
 
-        Mockito.when(jdbcTemplate.queryForObject(
-                        eq(SQL_SELECT_KETTLE),
-                        (RowMapper<Kettle>) argThat(argument -> argument instanceof RowMapper<?>),
-                        eq(updateKettle.getNumber())
-                )
+        Mockito.when(kettleJpa.save(updateKettle)
         ).thenReturn(updateKettle);
 
         Kettle actual = service.updateKettle(updateKettle);
 
-        Assertions.assertEquals(actual,updateKettle);
-        verify(jdbcTemplate, new Times(1)).update(
-                eq(SQL_UPDATE_KETTLE),
-                eq(updateKettle.getType()),
-                eq(updateKettle.getColor()),
-                eq(updateKettle.getIsElectric()),
-                eq(updateKettle.getIsInduction()),
-                eq(updateKettle.getPrice()),
-                eq(updateKettle.getEnergy()),
-                eq(updateKettle.getRegistered()),
-                eq(updateKettle.getNumber())
-        );
-        verify(jdbcTemplate, new Times(1)).queryForObject(
-                eq(SQL_SELECT_KETTLE),
-                (RowMapper<Kettle>) argThat(argument -> argument instanceof RowMapper<?>),
-                eq(updateKettle.getNumber())
-        );
-    }
-
-    @Test
-    void updateKettle_then_throws_DataAccessException() {
-        updateKettle = buildKettle("glass", "pink", true, true, BigDecimal.valueOf(122.22), 'A', ZonedDateTime.parse("2011-11-11T11:11:11+02"));
-
-        Mockito.when(jdbcTemplate.update(
-                        eq(SQL_UPDATE_KETTLE),
-                        eq(updateKettle.getType()),
-                        eq(updateKettle.getColor()),
-                        eq(updateKettle.getIsElectric()),
-                        eq(updateKettle.getIsInduction()),
-                        eq(updateKettle.getPrice()),
-                        eq(updateKettle.getEnergy()),
-                        eq(updateKettle.getRegistered()),
-                        eq(updateKettle.getNumber())
-                )
-        ).thenThrow(new DataAccessException("There is exception") {});
-
-        Assertions.assertThrows(DataAccessException.class, () -> service.updateKettle(updateKettle));
-        verify(jdbcTemplate, new Times(1)).update(
-                eq(SQL_UPDATE_KETTLE),
-                eq(updateKettle.getType()),
-                eq(updateKettle.getColor()),
-                eq(updateKettle.getIsElectric()),
-                eq(updateKettle.getIsInduction()),
-                eq(updateKettle.getPrice()),
-                eq(updateKettle.getEnergy()),
-                eq(updateKettle.getRegistered()),
-                eq(updateKettle.getNumber())
-        );
-        verify(jdbcTemplate, new Times(0)).queryForObject(
-                eq(SQL_SELECT_KETTLE),
-                (RowMapper<Kettle>) argThat(argument -> argument instanceof RowMapper<?>),
-                eq(updateKettle.getNumber())
-        );
+        Assertions.assertEquals(actual, updateKettle);
+        verify(kettleJpa, new Times(1)).save(updateKettle);
     }
 
     @Test
     void deleteKettle_then_return() {
-        testKettle = buildKettle("glass", "blue", false, false, BigDecimal.valueOf(30.33), 'A', ZonedDateTime.parse("2023-12-26T20:28:33.213+02"));
+        Kettle testKettle = buildKettle("glass", "notColor", false, false, BigDecimal.valueOf(80.5), 'B', ZonedDateTime.parse("2023-12-31T14:11:54+02"));
+        testKettle.setNumber(2);
 
-        when(jdbcTemplate.queryForObject(
-                        eq(SQL_SELECT_KETTLE),
-                        (RowMapper<Kettle>) argThat(argument -> argument instanceof RowMapper<?>),
-                        eq(number)
-        )
+        Mockito.when(service.findKettleByNumber(testKettle.getNumber())
         ).thenReturn(testKettle);
-
-        when(jdbcTemplate.update(
-                                eq(SQL_DELETE_KETTLE),
-                                eq(testKettle.getNumber())
-                )
-                )
-                .thenReturn(1);
-
-        Kettle actual = service.deleteKettle(number);
+        Kettle actual = service.deleteKettle(testKettle.getNumber());
 
         Assertions.assertEquals(actual,testKettle);
 
-        Mockito.verify(jdbcTemplate, new Times(1)).queryForObject(
-                eq(SQL_SELECT_KETTLE),
-                (RowMapper<Kettle>) argThat(argument -> argument instanceof RowMapper<?>),
-                eq(number)
-        );
-
-        Mockito.verify(jdbcTemplate, new Times(1)).update(
-                eq(SQL_DELETE_KETTLE),
-                eq(testKettle.getNumber())
-        );
-
+        Mockito.verify(kettleJpa, new Times(1)).deleteById(2);
     }
 
     @Test
     void deleteKettle_then_return_null() {
-
-        when(jdbcTemplate.queryForObject(
-                        eq(SQL_SELECT_KETTLE),
-                        (RowMapper<Kettle>) argThat(argument -> argument instanceof RowMapper<?>),
-                        eq(number)
-                )
+        Random random = new Random();
+        Integer number = random.nextInt(Integer.MAX_VALUE);
+        when(kettleJpa.getById(number)
         ).thenReturn(null);
 
         Kettle actual = service.deleteKettle(number);
 
         assertNull(actual);
-        Mockito.verify(jdbcTemplate, new Times(1)).queryForObject(
-                        eq(SQL_SELECT_KETTLE),
-                        (RowMapper<Kettle>) argThat(argument -> argument instanceof RowMapper<?>),
-                        eq(number)
-                );
-
-        Mockito.verify(jdbcTemplate, new Times(0)).update(
-                eq(SQL_DELETE_KETTLE),
-                eq(number)
-        );
-    }
-
-    @Test
-    void deleteKettle_then_throws_DataAccessException() {
-
-        when(jdbcTemplate.queryForObject(
-                        eq(SQL_SELECT_KETTLE),
-                        (RowMapper<Kettle>) argThat(argument -> argument instanceof RowMapper<?>),
-                        eq(number)
-                )
-        ).thenThrow(new DataAccessException("Boo") {});
-
-        Assertions.assertThrows(DataAccessException.class,() -> service.deleteKettle(number));
-
-        Mockito.verify(jdbcTemplate, new Times(1)).queryForObject(
-                eq(SQL_SELECT_KETTLE),
-                (RowMapper<Kettle>) argThat(argument -> argument instanceof RowMapper<?>),
-                eq(number)
-        );
-
-        Mockito.verify(jdbcTemplate, new Times(0)).update(
-                eq(SQL_DELETE_KETTLE),
-                eq(number)
-        );
+        Mockito.verify(kettleJpa, new Times(0)).deleteById(number);
     }
 
     @Test
     void insertKettle_then_return() {
-        testKettle = buildKettle("glass", "blue", false, false, BigDecimal.valueOf(30.33), 'A', ZonedDateTime.parse("2023-12-26T20:28:33.213+02"));
+        Kettle testKettle = buildKettle("glass", "blue", false, false, BigDecimal.valueOf(30.33), 'A', ZonedDateTime.parse("2023-12-26T20:28:33.213+02"));
 
-        when(jdbcTemplate.update(
-                eq(SQL_INSERT_KETTLE),
-                eq(testKettle.getNumber()),
-                eq(testKettle.getType()),
-                eq(testKettle.getColor()),
-                eq(testKettle.getIsElectric()),
-                eq(testKettle.getIsInduction()),
-                eq(testKettle.getPrice()),
-                eq(testKettle.getEnergy()),
-                eq(testKettle.getRegistered())
-        )
-        ).thenReturn(1);
-        when(jdbcTemplate.queryForObject(
-                        eq(SQL_SELECT_KETTLE),
-                        (RowMapper<Kettle>) argThat(argument -> argument instanceof RowMapper<?>),
-                        eq(testKettle.getNumber())
-        )
+        when(kettleJpa.save(testKettle)
         ).thenReturn(testKettle);
-
         Kettle actual = service.insertKettle(testKettle);
 
         Assertions.assertEquals(actual,testKettle);
 
-        verify(jdbcTemplate,new Times(1)).update(
-                eq(SQL_INSERT_KETTLE),
-                eq(testKettle.getNumber()),
-                eq(testKettle.getType()),
-                eq(testKettle.getColor()),
-                eq(testKettle.getIsElectric()),
-                eq(testKettle.getIsInduction()),
-                eq(testKettle.getPrice()),
-                eq(testKettle.getEnergy()),
-                eq(testKettle.getRegistered())
-        );
-
-        verify(jdbcTemplate, new Times(1)).queryForObject(
-                eq(SQL_SELECT_KETTLE),
-                (RowMapper<Kettle>) argThat(argument -> argument instanceof RowMapper<?>),
-                eq(testKettle.getNumber())
-        );
+        verify(kettleJpa,new Times(1)).save(testKettle);
     }
 
     @Test
     void insertKettle_then_trows_DataAccessException() {
-        testKettle = buildKettle("glass", "blue", false, false, BigDecimal.valueOf(30.33), 'A', ZonedDateTime.parse("2023-12-26T20:28:33.213+02"));
+        Kettle testKettle = buildKettle("glass", "blue", false, false, BigDecimal.valueOf(30.33), 'A', ZonedDateTime.parse("2023-12-26T20:28:33.213+02"));
 
-        when(jdbcTemplate.update(
-                eq(SQL_INSERT_KETTLE),
-                eq(testKettle.getNumber()),
-                eq(testKettle.getType()),
-                eq(testKettle.getColor()),
-                eq(testKettle.getIsElectric()),
-                eq(testKettle.getIsInduction()),
-                eq(testKettle.getPrice()),
-                eq(testKettle.getEnergy()),
-                eq(testKettle.getRegistered())
-                )
-        ).thenThrow(new DataAccessException("There is DataAccessException"){});
+        when(kettleJpa.save(testKettle)
+        ).thenThrow(new DataAccessException(""){});
 
 
         Assertions.assertThrows(DataAccessException.class, () -> service.insertKettle(testKettle));
 
-        verify(jdbcTemplate,new Times(1)).update(
-                eq(SQL_INSERT_KETTLE),
-                eq(testKettle.getNumber()),
-                eq(testKettle.getType()),
-                eq(testKettle.getColor()),
-                eq(testKettle.getIsElectric()),
-                eq(testKettle.getIsInduction()),
-                eq(testKettle.getPrice()),
-                eq(testKettle.getEnergy()),
-                eq(testKettle.getRegistered())
-        );
-
-        verify(jdbcTemplate, new Times(0)).queryForObject(
-                eq(SQL_SELECT_KETTLE),
-                (RowMapper<Kettle>) argThat(argument -> argument instanceof RowMapper<?>),
-                eq(0)
-        );
+        verify(kettleJpa,new Times(1)).save(testKettle);
     }
 
     @Test
     void readALL_then_return() {
-        testKettle = buildKettle("glass", "blue", false, false, BigDecimal.valueOf(30.33), 'A', ZonedDateTime.parse("2023-12-26T20:28:33.213+02"));
-        updateKettle = buildKettle("glass", "pink", true, true, BigDecimal.valueOf(122.22), 'A', ZonedDateTime.parse("2011-11-11T11:11:11+02"));
-        listKettle = new ArrayList<>(Arrays.asList(updateKettle,testKettle));
+        Kettle testKettle = buildKettle("glass", "blue", false, false, BigDecimal.valueOf(30.33), 'A', ZonedDateTime.parse("2023-12-26T20:28:33.213+02"));
+        Kettle updateKettle = buildKettle("glass", "pink", true, true, BigDecimal.valueOf(122.22), 'A', ZonedDateTime.parse("2011-11-11T11:11:11+02"));
+        List<Kettle> listKettle = new ArrayList<>(Arrays.asList(updateKettle,testKettle));
 
-        when(jdbcTemplate.query(
-                        eq("SELECT * FROM KETTLE"),
-                        (RowMapper<Kettle>) argThat(argument -> argument instanceof RowMapper<?>)
-        )
+        when(kettleJpa.findAll()
         ).thenReturn(listKettle);
 
         List<Kettle> actualList = service.readALL();
 
         Assertions.assertEquals(actualList,listKettle);
-        verify(jdbcTemplate, new Times(1)).query(
-                eq("SELECT * FROM KETTLE"),
-                (RowMapper<Kettle>) argThat(argument -> argument instanceof RowMapper<?>)
-        );
+        verify(kettleJpa, new Times(1)).findAll();
     }
 
     @Test
     void readALL_then_throws_DataAccessException() {
 
-        when(jdbcTemplate.query(
-                eq("SELECT * FROM KETTLE"),
-                (RowMapper<Kettle>) argThat(argument -> argument instanceof RowMapper<?>)
-        )).thenThrow(new DataAccessException("There exception"){});
+        when(kettleJpa.findAll()).thenThrow(new DataAccessException(""){});
 
         Assertions.assertThrows(DataAccessException.class, () -> service.readALL());
 
-        verify(jdbcTemplate, new Times(1)).query(
-                eq("SELECT * FROM KETTLE"),
-                (RowMapper<Kettle>) argThat(argument -> argument instanceof RowMapper<?>)
-        );
+        verify(kettleJpa, new Times(1)).findAll();
     }
 
     @Test
     void deleteAll_then_emptyList() {
-
-        Mockito.when(jdbcTemplate.update(
-                        eq("DELETE FROM KETTLE")
-                )
-        ).thenReturn(1);
-
+        Mockito.doNothing().when(kettleJpa).deleteAll();
         service.deleteAll();
-
         List<Kettle> actualList = service.readALL();
 
         Assertions.assertEquals(actualList, Collections.emptyList());
 
-        Mockito.verify(jdbcTemplate, new Times(1)).update(
-                eq("DELETE FROM KETTLE")
-        );
+        Mockito.verify(kettleJpa, new Times(1)).deleteAll();
     }
 
     @Test
     void deleteAll_then_throws_DataAccessException() {
 
-        Mockito.when(jdbcTemplate.update(
-                        eq("DELETE FROM KETTLE")
-                )
-        ).thenThrow(new DataAccessException("There is exception") {});
+        Mockito.doThrow(new DataAccessException("") {})
+                .when(kettleJpa).deleteAll();
 
         Assertions.assertThrows(DataAccessException.class,() -> service.deleteAll());
 
-        Mockito.verify(jdbcTemplate, new Times(1)).update(
-                eq("DELETE FROM KETTLE")
-        );
+        Mockito.verify(kettleJpa, new Times(1)).deleteAll();
     }
 }

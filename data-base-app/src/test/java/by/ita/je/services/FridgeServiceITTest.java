@@ -46,9 +46,9 @@ private FridgeService fridgeService;
 
     @Test
     public void insert_then_return_correct_fridge(){
-        testFridge = buildFridge("Samsung", "The best", false, false, BigDecimal.valueOf(3000.99), 'A',ZonedDateTime.parse("2023-12-23T10:23:54+02") );
+        Fridge testFridge = buildFridge("Samsung", "The best", false, false, BigDecimal.valueOf(3000.99), 'A',ZonedDateTime.parse("2023-12-23T10:23:54+02") );
 
-        Fridge insertFridge = fridgeService.insertFridge(testFridge);
+        Fridge insertFridge = fridgeService.insertFridge();
         Assertions.assertEquals("Samsung", insertFridge.getType());
         Assertions.assertEquals("The best", insertFridge.getDescription());
         Assertions.assertEquals(false, insertFridge.getDiscount());
@@ -83,9 +83,9 @@ private FridgeService fridgeService;
 
     @Test
     public void update_then_return_correct_fridge_after_insert(){
-        testFridge = buildFridge("Samsung", "The best", false, false, BigDecimal.valueOf(3000.99), 'A',ZonedDateTime.parse("2023-12-23T10:23:54+02") );
+        Fridge testFridge = buildFridge("Samsung", "The best", false, false, BigDecimal.valueOf(3000.99), 'A',ZonedDateTime.parse("2023-12-23T10:23:54+02") );
 
-        fridgeService.insertFridge(testFridge);
+        fridgeService.insertFridge();
         Fridge updateFridgeTest = Fridge.builder()
                 .number(testFridge.getNumber())
                 .type("slim")

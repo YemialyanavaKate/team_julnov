@@ -46,9 +46,9 @@ private TVService tvService;
 
     @Test
     public void insert_then_return_correct_tv(){
-        testTV = buildTV("TV", "LG", false, 15, BigDecimal.valueOf(1000.5), 'A', ZonedDateTime.parse("2023-12-23T10:23:54+02"));
+        TV testTV = buildTV("TV", "LG", false, 15, BigDecimal.valueOf(1000.5), 'A', ZonedDateTime.parse("2023-12-23T10:23:54+02"));
 
-        TV insertTV = tvService.insertTV(testTV);
+        TV insertTV = tvService.insertTV();
         Assertions.assertEquals("TV", insertTV.getType());
         Assertions.assertEquals("LG", insertTV.getBrand());
         Assertions.assertEquals(false, insertTV.getDiscount());
@@ -83,9 +83,9 @@ private TVService tvService;
 
     @Test
     public void update_then_return_correct_tv_after_insert(){
-        testTV = buildTV("TV", "LG", false, 15, BigDecimal.valueOf(1000.5), 'A', ZonedDateTime.parse("2023-12-23T10:23:54+02"));
+        TV testTV = buildTV("TV", "LG", false, 15, BigDecimal.valueOf(1000.5), 'A', ZonedDateTime.parse("2023-12-23T10:23:54+02"));
 
-        tvService.insertTV(testTV);
+        tvService.insertTV();
         TV updateTVTest = TV.builder()
                 .number(testTV.getNumber())
                 .type("TV")

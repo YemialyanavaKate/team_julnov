@@ -5,7 +5,7 @@ import by.ita.je.models.Fridge;
 import org.springframework.stereotype.Component;
 
 @Component
-public class FridgeMapper {
+public class FridgeMapperToDto {
 
     public FridgeDto toDTO(Fridge fridge) {
         return new FridgeDto(
