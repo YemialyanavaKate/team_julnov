@@ -5,7 +5,7 @@ import by.ita.je.models.Kettle;
 import org.springframework.stereotype.Component;
 
 @Component
-public class KettleMapper {
+public class KettleMapperToDto {
 
     public KettleDto toDTO(Kettle kettle){
         return new KettleDto(

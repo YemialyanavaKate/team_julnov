@@ -1,57 +1,65 @@
 package by.ita.je.services;
 
-import by.ita.je.mappers.RowMapperMulticooker;
 import by.ita.je.models.Multicooker;
-import org.springframework.dao.EmptyResultDataAccessException;
-import org.springframework.jdbc.core.JdbcTemplate;
+import by.ita.je.repository.MulticookerRepoEM;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
+import java.time.ZonedDateTime;
 import java.util.List;
 
 @Service
 public class MulticookerService {
+    private final MulticookerRepoEM multicookerRepoEM;
 
-    private final JdbcTemplate jdbcTemplate;
-    private final RowMapperMulticooker rowMapperMulticooker;
-    public MulticookerService(JdbcTemplate jdbcTemplate, RowMapperMulticooker rowMapperMulticooker){
-        this.jdbcTemplate = jdbcTemplate;
-        this.rowMapperMulticooker = rowMapperMulticooker;
+    public MulticookerService(MulticookerRepoEM multicookerRepoEM) {
+        this.multicookerRepoEM = multicookerRepoEM;
     }
 
-    public Multicooker findMulticookerByNumber(Integer number){
-        String sql = "SELECT * FROM MULTICOOKER WHERE number = ?";
-        try {
-            return jdbcTemplate.queryForObject(sql, (resultSet, rowMap)-> rowMapperMulticooker.mapRow(resultSet), number);
-        } catch (EmptyResultDataAccessException e) {
-            return null;
-        }
+    public Multicooker findMulticookerByNumber(Integer number) {
+        return multicookerRepoEM.findMulticookerByNumber(number);
     }
 
-    public Multicooker updateMulticooker(Multicooker multicooker){
-        String sql = "UPDATE MULTICOOKER SET type = ?, description = ?, isTouchScreen = ?, numberModes = ?, price = ?, energy = ?, registered = ? WHERE number = ?";
-        jdbcTemplate.update(sql, multicooker.getType(), multicooker.getDescription(), multicooker.getIsTouchScreen(), multicooker.getNumberModes(), multicooker.getPrice(), multicooker.getEnergy(), multicooker.getRegistered(), multicooker.getNumber());
-        return findMulticookerByNumber(multicooker.getNumber());
+    @Transactional
+    public Multicooker createMulticooker() {
+        return Multicooker.builder()
+                .number(5)
+                .type("Midea")
+                .description("So so")
+                .isTouchScreen(true)
+                .numberModes(91)
+                .price(BigDecimal.valueOf(1112))
+                .energy('B')
+                .registered(ZonedDateTime.parse("2024-01-01T10:23:54+02"))
+                .build();
     }
 
+    @Transactional
+    public Multicooker updateMulticooker(Multicooker multicooker) {
+        multicooker.setType("Tefal");
+        multicooker.setIsTouchScreen(true);
+        multicooker.setPrice(BigDecimal.valueOf(1000.5));
+
+        return multicookerRepoEM.updateMulticooker(multicooker);
+    }
+
+    @Transactional
     public Multicooker deleteMulticooker(Integer number) {
-        Multicooker multicookerDelete = findMulticookerByNumber(number);
-        String sql = "DELETE FROM MULTICOOKER WHERE number = ?";
-        jdbcTemplate.update(sql, multicookerDelete.getNumber());
-        return multicookerDelete;
+        return multicookerRepoEM.deleteMulticooker(number);
     }
 
-    public Multicooker insertMulticooker(Multicooker multicooker){
-        String sql = "INSERT INTO MULTICOOKER (number, type, description, isTouchScreen, numberModes, price, energy, registered)" +
-                "VALUES (?, ?, ?, ?, ?, ?, ?, ?);";
-        jdbcTemplate.update(sql, multicooker.getNumber(), multicooker.getType(), multicooker.getDescription(), multicooker.getIsTouchScreen(), multicooker.getNumberModes(), multicooker.getPrice(), multicooker.getEnergy(), multicooker.getRegistered());
-        return findMulticookerByNumber(multicooker.getNumber());
+    @Transactional
+    public Multicooker insertMulticooker(Multicooker multicooker) {
+        return multicookerRepoEM.insertMulticooker(multicooker);
     }
+
     public List<Multicooker> readALL() {
-        return jdbcTemplate.query("SELECT * FROM MULTICOOKER", (rs, rowNum) -> rowMapperMulticooker.mapRow(rs));
+        return multicookerRepoEM.readAll();
     }
 
+    @Transactional
     public void deleteALL() {
-        String sql = "DELETE FROM MULTICOOKER";
-        jdbcTemplate.update(sql);
+        multicookerRepoEM.deleteALL();
     }
 }

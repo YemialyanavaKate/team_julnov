@@ -1,6 +1,7 @@
 package by.ita.je.services;
 
 import by.ita.je.models.Fridge;
+import by.ita.je.repository.FridgeRepoCrud;
 import by.ita.je.services.utils.TestUtils;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -10,409 +11,229 @@ import org.mockito.Mock;
 import org.mockito.internal.verification.Times;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.dao.DataAccessException;
-import org.springframework.dao.EmptyResultDataAccessException;
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.RowMapper;
 
 import java.math.BigDecimal;
 import java.time.ZonedDateTime;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class FridgeServiceTest extends TestUtils {
     @Mock
-    private JdbcTemplate jdbcTemplate;
+    private FridgeRepoCrud fridgeRepoCrud;
     @InjectMocks
     private FridgeService service;
 
     @Test
     void findFridgeByNumber_then_return_object() {
-        testFridge = buildFridge("Samsung", "The best", false, false, BigDecimal.valueOf(3000.99), 'A', ZonedDateTime.now());
-
-                when(jdbcTemplate.queryForObject(
-                eq(SQL_SELECT_FRIDGE),
-                (RowMapper<Fridge>) argThat(argument -> argument instanceof RowMapper<?>),
-                eq(number)
+        Fridge testFridge = buildFridge("Samsung", "The best", false, false, BigDecimal.valueOf(3000.99), 'A', ZonedDateTime.now());
+        testFridge.setNumber(2);
+        Integer number = 2;
+        when(fridgeRepoCrud.findById(
+                        eq(number)
                 )
-        ).thenReturn(testFridge);
+        ).thenReturn(Optional.of(testFridge));
 
         Fridge actual = service.findFridgeByNumber(number);
 
-        assertEquals(actual,testFridge);
+        assertEquals(actual, testFridge);
 
         verify(
-                jdbcTemplate, new Times(1)).queryForObject(
-                        eq(SQL_SELECT_FRIDGE),
-                        (RowMapper<Fridge>) argThat(argument -> argument instanceof RowMapper<?>),
-                        eq(number)
-                );
+                fridgeRepoCrud, new Times(1)).findById(
+                eq(number)
+        );
     }
 
     @Test
     void findFridgeByNumber_then_return_null() {
+        Random random = new Random();
+        Integer number = random.nextInt(Integer.MAX_VALUE);
 
-        when(jdbcTemplate.queryForObject(
-                        eq(SQL_SELECT_FRIDGE),
-                        (RowMapper<Fridge>) argThat(argument -> argument instanceof RowMapper<?>),
-                        eq(number)
-                )
-        ).thenReturn(null);
+        when(fridgeRepoCrud.findById(number)
+        ).thenReturn(Optional.empty());
 
         Fridge actual = service.findFridgeByNumber(number);
 
         assertNull(actual);
 
         verify(
-                jdbcTemplate, new Times(1)).queryForObject(
-                eq(SQL_SELECT_FRIDGE),
-                (RowMapper<Fridge>) argThat(argument -> argument instanceof RowMapper<?>),
+                fridgeRepoCrud, new Times(1)).findById(
                 eq(number)
         );
     }
 
     @Test
     void findFridgeByNumber_then_trows_DataAccessException() {
-
-        when(jdbcTemplate.queryForObject(
-                        eq(SQL_SELECT_FRIDGE),
-                        (RowMapper<Fridge>) argThat(argument -> argument instanceof RowMapper<?>),
+        Random random = new Random();
+        Integer number = random.nextInt(Integer.MAX_VALUE);
+        when(fridgeRepoCrud.findById(
                         eq(number)
                 )
-        ).thenThrow(new DataAccessException("There exception"){});
+        ).thenThrow(new DataAccessException("") {
+        });
 
         Assertions.assertThrows(DataAccessException.class, () -> service.findFridgeByNumber(number));
         verify(
-                jdbcTemplate, new Times(1)).queryForObject(
-                eq(SQL_SELECT_FRIDGE),
-                (RowMapper<Fridge>) argThat(argument -> argument instanceof RowMapper<?>),
+                fridgeRepoCrud, new Times(1)).findById(
                 eq(number)
         );
     }
 
-    @Test
-    void findFridgeByNumber_then_trows_EmptyResultDataAccessException() {
-
-        when(jdbcTemplate.queryForObject(
-                        eq(SQL_SELECT_FRIDGE),
-                        (RowMapper<Fridge>) argThat(argument -> argument instanceof RowMapper<?>),
-                        eq(number)
-                )
-        ).thenThrow(new EmptyResultDataAccessException(0));
-
-        Fridge actual = service.findFridgeByNumber(number);
-
-        assertNull(actual);
-
-        verify(
-                jdbcTemplate, new Times(1)).queryForObject(
-                eq(SQL_SELECT_FRIDGE),
-                (RowMapper<Fridge>) argThat(argument -> argument instanceof RowMapper<?>),
-                eq(number)
-        );
-    }
     @Test
     void updateFridge_then_return() {
-        updateFridge = buildFridge("slim", "So so", true, true, BigDecimal.valueOf(1000.8), 'A', ZonedDateTime.now());
+        Fridge updateFridge = buildFridge("slim", "So so", true, true, BigDecimal.valueOf(1000.8), 'A', ZonedDateTime.parse("2019-11-19T19:19:54+02"));
+        when(fridgeRepoCrud.findById(
+                        eq(updateFridge.getNumber())
+                )
+        ).thenReturn(Optional.of(updateFridge));
 
-        when(jdbcTemplate.update(
-                eq(SQL_UPDATE_FRIDGE),
-                eq(updateFridge.getType()),
-                eq(updateFridge.getDescription()),
-                eq(updateFridge.getDiscount()),
-                eq(updateFridge.getDefect()),
-                eq(updateFridge.getPrice()),
-                eq(updateFridge.getEnergy()),
-                eq(updateFridge.getRegistered()),
-                eq(updateFridge.getNumber())
-        )).thenReturn(2);
-
-        when(jdbcTemplate.queryForObject(
-                eq(SQL_SELECT_FRIDGE),
-                (RowMapper<Fridge>) argThat(argument -> argument instanceof RowMapper<?>),
-                eq(updateFridge.getNumber())
+        when(fridgeRepoCrud.save(
+                eq(updateFridge)
         )).thenReturn(updateFridge);
 
         Fridge actual = service.updateFridge(updateFridge);
+        Assertions.assertEquals(actual, updateFridge);
 
-        Assertions.assertEquals(actual,updateFridge);
-
-        verify(jdbcTemplate, new Times(1)).update(
-                eq(SQL_UPDATE_FRIDGE),
-                eq(updateFridge.getType()),
-                eq(updateFridge.getDescription()),
-                eq(updateFridge.getDiscount()),
-                eq(updateFridge.getDefect()),
-                eq(updateFridge.getPrice()),
-                eq(updateFridge.getEnergy()),
-                eq(updateFridge.getRegistered()),
-                eq(updateFridge.getNumber())
-        );
-        verify(jdbcTemplate, new Times(1)).queryForObject(
-                eq(SQL_SELECT_FRIDGE),
-                (RowMapper<Fridge>) argThat(argument -> argument instanceof RowMapper<?>),
-                eq(updateFridge.getNumber())
-        );
+        verify(fridgeRepoCrud, new Times(1)).findById(updateFridge.getNumber());
+        verify(fridgeRepoCrud, new Times(1)).save(updateFridge);
     }
 
     @Test
     void updateFridge_then_throws_DataAccessException() {
-        updateFridge = buildFridge("slim", "So so", true, true, BigDecimal.valueOf(1000.8), 'A', ZonedDateTime.now());
+        Fridge updateFridge = buildFridge("slim", "So so", true, true, BigDecimal.valueOf(1000.8), 'A', ZonedDateTime.now());
 
-        when(jdbcTemplate.update(
-                eq(SQL_UPDATE_FRIDGE),
-                eq(updateFridge.getType()),
-                eq(updateFridge.getDescription()),
-                eq(updateFridge.getDiscount()),
-                eq(updateFridge.getDefect()),
-                eq(updateFridge.getPrice()),
-                eq(updateFridge.getEnergy()),
-                eq(updateFridge.getRegistered()),
+        when(fridgeRepoCrud.findById(
                 eq(updateFridge.getNumber())
-        )).thenThrow(new DataAccessException("There is exception") {});
+        )).thenThrow(new DataAccessException("") {
+        });
 
-        Assertions.assertThrows(DataAccessException.class,() -> service.updateFridge(updateFridge));
+        Assertions.assertThrows(DataAccessException.class, () -> service.updateFridge(updateFridge));
 
-        verify(jdbcTemplate, new Times(1)).update(
-                eq(SQL_UPDATE_FRIDGE),
-                eq(updateFridge.getType()),
-                eq(updateFridge.getDescription()),
-                eq(updateFridge.getDiscount()),
-                eq(updateFridge.getDefect()),
-                eq(updateFridge.getPrice()),
-                eq(updateFridge.getEnergy()),
-                eq(updateFridge.getRegistered()),
+        verify(fridgeRepoCrud, new Times(1)).findById(
                 eq(updateFridge.getNumber())
         );
-        verify(jdbcTemplate, new Times(0)).queryForObject(
-                eq(SQL_SELECT_FRIDGE),
-                (RowMapper<Fridge>) argThat(argument -> argument instanceof RowMapper<?>),
-                eq(updateFridge.getNumber())
+        verify(fridgeRepoCrud, new Times(0)).save(
+                eq(updateFridge)
         );
     }
 
     @Test
     void deleteFridge_then_return() {
-        testFridge = buildFridge("Samsung", "The best", false, false, BigDecimal.valueOf(3000.99), 'A', ZonedDateTime.now());
+        Fridge testFridge = buildFridge("noFrost", "OK fridge", false, true, BigDecimal.valueOf(2500.5), 'A', ZonedDateTime.parse("2024-08-19T10:23:54+02"));
 
-        when(jdbcTemplate.queryForObject(
-                        eq(SQL_SELECT_FRIDGE),
-                        (RowMapper<Fridge>) argThat(argument -> argument instanceof RowMapper<?>),
-                        eq(number)
-                )
-                ).thenReturn(testFridge);
+        when(fridgeRepoCrud.findById(
+                eq(testFridge.getNumber())
+        )).thenReturn(Optional.of(testFridge));
+        doNothing().when(fridgeRepoCrud).deleteById(testFridge.getNumber());
 
-        when(jdbcTemplate.update(
-                        eq(SQL_DELETE_FRIDGE),
-                        eq(testFridge.getNumber())
-                )
-                ).thenReturn(1);
-
-        Fridge actual = service.deleteFridge(number);
+        Fridge actual = service.deleteFridge(testFridge.getNumber());
 
         Assertions.assertEquals(actual, testFridge);
 
-        verify(jdbcTemplate, new Times(1)).queryForObject(
-                eq(SQL_SELECT_FRIDGE),
-                (RowMapper<Fridge>) argThat(argument -> argument instanceof RowMapper<?>),
-                eq(number)
+        verify(fridgeRepoCrud, new Times(1)).findById(
+                eq(testFridge.getNumber())
         );
-        verify(jdbcTemplate, new Times(1)).update(
-                eq(SQL_DELETE_FRIDGE),
+        verify(fridgeRepoCrud, new Times(1)).deleteById(
                 eq(testFridge.getNumber())
         );
     }
 
-   @Test
-   void deleteFridge_then_return_null() {
-
-        when(jdbcTemplate.queryForObject(
-                eq(SQL_SELECT_FRIDGE),
-                (RowMapper<Fridge>) argThat(argument -> argument instanceof RowMapper<?>),
-                eq(number)
+    @Test
+    void deleteFridge_then_return_null() {
+        Random random = new Random();
+        Integer number = random.nextInt(Integer.MAX_VALUE);
+        when(fridgeRepoCrud.findById(
+                        eq(number)
                 )
-        ).thenReturn(null);
+        ).thenReturn(Optional.empty());
 
-       Fridge actual = service.findFridgeByNumber(number);
+        Fridge actual = service.findFridgeByNumber(number);
 
-       assertNull(actual);
+        assertNull(actual);
 
-       verify(jdbcTemplate, new Times(1)).queryForObject(
-               eq(SQL_SELECT_FRIDGE),
-               (RowMapper<Fridge>) argThat(argument -> argument instanceof RowMapper<?>),
-               eq(number)
-       );
+        verify(fridgeRepoCrud, new Times(1)).findById(
+                eq(number)
+        );
 
-       verify(jdbcTemplate, new Times(0)
-        ).update(
-               eq(SQL_DELETE_FRIDGE),
-               eq(number)
+        verify(fridgeRepoCrud, new Times(0)
+        ).deleteById(
+                eq(number)
         );
     }
 
     @Test
     void deleteFridge_then_trows_DataAccessException() {
-
-        when(jdbcTemplate.queryForObject(
-                        eq(SQL_SELECT_FRIDGE),
-                        (RowMapper<Fridge>) argThat(argument -> argument instanceof RowMapper<?>),
+        Random random = new Random();
+        Integer number = random.nextInt(Integer.MAX_VALUE);
+        when(fridgeRepoCrud.findById(
                         eq(number)
                 )
-        ).thenThrow(new DataAccessException("There is exception"){});
+        ).thenThrow(new DataAccessException("") {
+        });
 
-        Assertions.assertThrows(DataAccessException.class,() -> service.deleteFridge(number));
+        Assertions.assertThrows(DataAccessException.class, () -> service.deleteFridge(number));
 
-        verify(jdbcTemplate, new Times(1)).queryForObject(
-                eq(SQL_SELECT_FRIDGE),
-                (RowMapper<Fridge>) argThat(argument -> argument instanceof RowMapper<?>),
+        verify(fridgeRepoCrud, new Times(1)).findById(
                 eq(number)
         );
 
-        verify(jdbcTemplate, new Times(0)
-        ).update(
-                eq(SQL_DELETE_FRIDGE),
+        verify(fridgeRepoCrud, new Times(0)
+        ).deleteById(
                 eq(number)
         );
     }
 
     @Test
     void insertFridge_then_return() {
-        testFridge = buildFridge("Samsung", "The best", false, false, BigDecimal.valueOf(3000.99), 'A', ZonedDateTime.now());
+        Fridge testFridge = buildFridge("Samsung", "The best", false, false, BigDecimal.valueOf(3000.99), 'A', ZonedDateTime.parse("2023-05-13T07:50:54+02:00"));
 
-        when(jdbcTemplate.update(
-                eq(SQL_INSERT_FRIDGE),
-                eq(testFridge.getNumber()),
-                eq(testFridge.getType()),
-                eq(testFridge.getDescription()),
-                eq(testFridge.getDiscount()),
-                eq(testFridge.getDefect()),
-                eq(testFridge.getPrice()),
-                eq(testFridge.getEnergy()),
-                eq(testFridge.getRegistered())
-        )
-        ).thenReturn(1);
-        when(jdbcTemplate.queryForObject(
-                eq(SQL_SELECT_FRIDGE),
-                (RowMapper<Fridge>) argThat(argument -> argument instanceof RowMapper<?>),
-                eq(testFridge.getNumber())
-        )
+        testFridge.setNumber(6);
+        when(fridgeRepoCrud.save(testFridge)
         ).thenReturn(testFridge);
 
-        Fridge actual = service.insertFridge(testFridge);
+        Fridge actual = service.insertFridge();
 
         Assertions.assertEquals(actual, testFridge);
 
-        verify(jdbcTemplate, new Times(1)).update(
-                eq(SQL_INSERT_FRIDGE),
-                eq(testFridge.getNumber()),
-                eq(testFridge.getType()),
-                eq(testFridge.getDescription()),
-                eq(testFridge.getDiscount()),
-                eq(testFridge.getDefect()),
-                eq(testFridge.getPrice()),
-                eq(testFridge.getEnergy()),
-                eq(testFridge.getRegistered())
-        );
-
-        verify(jdbcTemplate, new Times(1)).queryForObject(
-                eq(SQL_SELECT_FRIDGE),
-                (RowMapper<Fridge>) argThat(argument -> argument instanceof RowMapper<?>),
-                eq(testFridge.getNumber())
-        );
-    }
-
-    @Test
-    void insertFridge_then_trows_DataAccessException() {
-        testFridge = buildFridge("Samsung", "The best", false, false, BigDecimal.valueOf(3000.99), 'A', ZonedDateTime.now());
-
-        when(jdbcTemplate.update(
-                        eq(SQL_INSERT_FRIDGE),
-                        eq(testFridge.getNumber()),
-                        eq(testFridge.getType()),
-                        eq(testFridge.getDescription()),
-                        eq(testFridge.getDiscount()),
-                        eq(testFridge.getDefect()),
-                        eq(testFridge.getPrice()),
-                        eq(testFridge.getEnergy()),
-                        eq(testFridge.getRegistered())
-                )
-        ).thenThrow(new DataAccessException("There is DataAccessException") {});
-
-        Assertions.assertThrows(DataAccessException.class, () -> service.insertFridge(testFridge));
-
-        verify(jdbcTemplate, new Times(1)
-        ).update(
-                eq(SQL_INSERT_FRIDGE),
-                eq(testFridge.getNumber()),
-                eq(testFridge.getType()),
-                eq(testFridge.getDescription()),
-                eq(testFridge.getDiscount()),
-                eq(testFridge.getDefect()),
-                eq(testFridge.getPrice()),
-                eq(testFridge.getEnergy()),
-                eq(testFridge.getRegistered())
-        );
-
-        verify(jdbcTemplate, new Times(0)).queryForObject(
-                eq(SQL_SELECT_FRIDGE),
-                (RowMapper<Fridge>) argThat(argument -> argument instanceof RowMapper<?>),
-                eq(number)
+        verify(fridgeRepoCrud, new Times(1)).save(
+                eq(testFridge)
         );
     }
 
     @Test
     void readALL_then_return() {
-        testFridge = buildFridge("Samsung", "The best", false, false, BigDecimal.valueOf(3000.99), 'A', ZonedDateTime.now());
-        updateFridge = buildFridge("slim", "So so", true, true, BigDecimal.valueOf(1000.8), 'A', ZonedDateTime.now());
-        listFridge = new ArrayList<>(Arrays.asList(updateFridge,testFridge));
+        Fridge testFridge = buildFridge("Samsung", "The best", false, false, BigDecimal.valueOf(3000.99), 'A', ZonedDateTime.now());
+        Fridge updateFridge = buildFridge("slim", "So so", true, true, BigDecimal.valueOf(1000.8), 'A', ZonedDateTime.now());
+        List<Fridge> listFridge = new ArrayList<>(Arrays.asList(updateFridge, testFridge));
 
-        when(jdbcTemplate.query(
-                eq("SELECT * FROM FRIDGE"),
-                (RowMapper<Fridge>) argThat(argument -> argument instanceof RowMapper<?>)
-        )
+        when(fridgeRepoCrud.findAll()
         ).thenReturn(listFridge);
 
         List<Fridge> actualList = service.readALL();
 
         Assertions.assertEquals(actualList, listFridge);
 
-        verify(jdbcTemplate, new Times(1)).query(
-                eq("SELECT * FROM FRIDGE"),
-                (RowMapper<Fridge>) argThat(argument -> argument instanceof RowMapper<?>)
-        );
+        verify(fridgeRepoCrud, new Times(1)).findAll();
     }
 
     @Test
     void readALL_then_throws_DataAccessException() {
 
-        when(jdbcTemplate.query(
-                        eq("SELECT * FROM FRIDGE"),
-                        (RowMapper<Fridge>) argThat(argument -> argument instanceof RowMapper<?>)
-                )
-        ).thenThrow(new DataAccessException("There exception") {});
+        when(fridgeRepoCrud.findAll()
+        ).thenThrow(new DataAccessException("") {
+        });
 
         Assertions.assertThrows(DataAccessException.class, () -> service.readALL());
 
-        verify(jdbcTemplate, new Times(1)).query(
-                eq("SELECT * FROM FRIDGE"),
-                (RowMapper<Fridge>) argThat(argument -> argument instanceof RowMapper<?>)
-        );
+        verify(fridgeRepoCrud, new Times(1)).findAll();
     }
 
     @Test
     void deleteAll_then_return_emptyList() {
-
-        when(jdbcTemplate.update(
-                        eq("DELETE FROM FRIDGE")
-                )
-        ).thenReturn(1);
+        doNothing().when(fridgeRepoCrud).deleteAll();
 
         service.deleteALL();
 
@@ -420,23 +241,7 @@ class FridgeServiceTest extends TestUtils {
 
         Assertions.assertEquals(actualList, Collections.emptyList());
 
-        verify(jdbcTemplate, new Times(1)).update(
-                eq("DELETE FROM FRIDGE")
-        );
-    }
+        verify(fridgeRepoCrud, new Times(1)).deleteAll();
 
-    @Test
-    void deleteAll_then_throws_DataAccessException() {
-
-        when(jdbcTemplate.update(
-                        eq("DELETE FROM FRIDGE")
-                )
-        ).thenThrow(new DataAccessException("There is exception") {});
-
-        Assertions.assertThrows(DataAccessException.class,() -> service.deleteALL());
-
-        verify(jdbcTemplate, new Times(1)).update(
-                eq("DELETE FROM FRIDGE")
-        );
     }
 }

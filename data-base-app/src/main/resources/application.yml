@@ -8,6 +8,14 @@ spring:
     password: sa
     driver-class-name: org.h2.Driver
     initialization-mode: always
+  jpa:
+    show-sql: true
+    hibernate:
+        dialect: "org.hibernate.dialect.H2Dialect"
+        ddl-auto: update
+    properties:
+      hibernate:
+        physical_naming_strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
   h2:
     console:
       enabled: true

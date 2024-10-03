@@ -1,61 +1,69 @@
 package by.ita.je.services;
 
-import by.ita.je.mappers.RowMapperKettle;
 import by.ita.je.models.Kettle;
-import org.springframework.dao.EmptyResultDataAccessException;
-import org.springframework.jdbc.core.JdbcTemplate;
+import by.ita.je.repository.KettleJpa;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
+import java.time.ZonedDateTime;
 import java.util.List;
 
 @Service
 public class KettleService {
 
-    private final JdbcTemplate jdbcTemplate;
-    private final RowMapperKettle rowMapperKettle;
-    public KettleService(JdbcTemplate jdbcTemplate, RowMapperKettle rowMapperKettle){
-        this.jdbcTemplate = jdbcTemplate;
-        this.rowMapperKettle = rowMapperKettle;
+    private final KettleJpa kettleJpa;
+
+    public KettleService(KettleJpa kettleJpa) {
+        this.kettleJpa = kettleJpa;
     }
-    public Kettle findKettleByNumber(Integer number){
-        String sql = "SELECT * FROM KETTLE WHERE number = ?";
-        try {
-            return jdbcTemplate.queryForObject(sql, (resultSet, rowNum) -> rowMapperKettle.mapRow(resultSet), number);
-        } catch (EmptyResultDataAccessException e) {
+
+    public Kettle findKettleByNumber(Integer number) {
+        return kettleJpa.getById(number);
+    }
+
+    public Kettle insertKettle(Kettle kettle) {
+        return kettleJpa.save(kettle);
+    }
+
+    public Kettle createKettle(){
+        return Kettle.builder()
+                .number(5)
+                .type("glass")
+                .color("blue")
+                .isElectric(false)
+                .isInduction(false)
+                .price(BigDecimal.valueOf(30.33))
+                .energy('A')
+                .registered(ZonedDateTime.parse("2023-12-26T20:28:33.213+02"))
+                .build();
+    }
+    public Kettle updateKettle(Kettle kettle) {
+        if (findKettleByNumber(kettle.getNumber()) != null) {
+
+            kettle.setType("glass");
+            kettle.setColor("pink");
+            kettle.setPrice(BigDecimal.valueOf(122.22));
+
+            return kettleJpa.save(kettle);
+        } else {
             return null;
         }
-    }
-
-
-    public Kettle updateKettle(Kettle kettle){
-        String sql = "UPDATE KETTLE SET type = ?, color = ?, isElectric = ?, isInduction = ?, price = ?, energy = ?, registered = ? WHERE number = ?";
-        jdbcTemplate.update(sql, kettle.getType(), kettle.getColor(), kettle.getIsElectric(), kettle.getIsInduction(), kettle.getPrice(), kettle.getEnergy(), kettle.getRegistered(), kettle.getNumber());
-        return findKettleByNumber(kettle.getNumber());
     }
 
     public Kettle deleteKettle(Integer number) {
         Kettle kettleDelete = findKettleByNumber(number);
-        if(kettleDelete == null){
+        if (kettleDelete == null) {
             return null;
         }
-        String sql = "DELETE FROM KETTLE WHERE number = ?";
-        jdbcTemplate.update(sql, kettleDelete.getNumber());
+        kettleJpa.deleteById(number);
         return kettleDelete;
     }
 
-    public Kettle insertKettle(Kettle kettle){
-        String sql = "INSERT INTO KETTLE (number, type, color, isElectric, isInduction, price, energy, registered) " +
-                "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
-        jdbcTemplate.update(sql, kettle.getNumber(), kettle.getType(), kettle.getColor(), kettle.getIsElectric(), kettle.getIsInduction(), kettle.getPrice(), kettle.getEnergy(), kettle.getRegistered());
-        return findKettleByNumber(kettle.getNumber());
-    }
-
     public List<Kettle> readALL() {
-        return jdbcTemplate.query("SELECT * FROM KETTLE",(resultSet, rowNum) -> rowMapperKettle.mapRow(resultSet));
+        return kettleJpa.findAll();
     }
 
     public void deleteAll() {
-        String sql = "DELETE FROM KETTLE";
-        jdbcTemplate.update(sql);
+        kettleJpa.deleteAll();
     }
 }

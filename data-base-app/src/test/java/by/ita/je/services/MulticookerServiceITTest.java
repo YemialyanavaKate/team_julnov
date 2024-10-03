@@ -46,7 +46,7 @@ private MulticookerService multicookerService;
 
     @Test
     public void insert_then_return_correct_multicooker(){
-        testMulticooker = buildMulticooker("Tefal", "бла-бла-бла", true, 10, BigDecimal.valueOf(1000.5), 'A', ZonedDateTime.parse("2023-12-23T10:23:54+02"));
+        Multicooker testMulticooker = buildMulticooker("Tefal", "бла-бла-бла", true, 10, BigDecimal.valueOf(1000.5), 'A', ZonedDateTime.parse("2023-12-23T10:23:54+02"));
 
         Multicooker insertMulticooker = multicookerService.insertMulticooker(testMulticooker);
         Assertions.assertEquals("Tefal", insertMulticooker.getType());
@@ -83,7 +83,7 @@ private MulticookerService multicookerService;
 
     @Test
     public void update_then_return_correct_multicooker_after_insert(){
-        testMulticooker = buildMulticooker("Tefal", "бла-бла-бла", true, 10, BigDecimal.valueOf(1000.5), 'A', ZonedDateTime.now());
+        Multicooker testMulticooker = buildMulticooker("Tefal", "бла-бла-бла", true, 10, BigDecimal.valueOf(1000.5), 'A', ZonedDateTime.now());
 
         multicookerService.insertMulticooker(testMulticooker);
         Multicooker updateMulticookerTest = Multicooker.builder()

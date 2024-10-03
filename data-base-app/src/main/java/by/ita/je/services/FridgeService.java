@@ -1,58 +1,76 @@
 package by.ita.je.services;
 
-import by.ita.je.mappers.RowMapperFridge;
 import by.ita.je.models.Fridge;
-import org.springframework.dao.EmptyResultDataAccessException;
-import org.springframework.jdbc.core.JdbcTemplate;
+import by.ita.je.repository.FridgeRepoCrud;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
+import java.time.ZonedDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
 public class FridgeService {
 
-    private final JdbcTemplate jdbcTemplate;
-    private final RowMapperFridge rowMapperFridge;
-    public FridgeService(JdbcTemplate jdbcTemplate, RowMapperFridge rowMapperFridge){
-        this.jdbcTemplate = jdbcTemplate;
-       this.rowMapperFridge = rowMapperFridge;
+    private final FridgeRepoCrud fridgeCrud;
+
+    public FridgeService(FridgeRepoCrud fridgeCrud) {
+        this.fridgeCrud = fridgeCrud;
     }
 
-    public Fridge findFridgeByNumber(Integer number){
-        String sql = "SELECT * FROM FRIDGE WHERE number = ?";
-        try {
-            return jdbcTemplate.queryForObject(sql, (resultSet, rowNum) -> rowMapperFridge.mapRow(resultSet), number);
-        } catch (EmptyResultDataAccessException e) {
-            return null;
-        }
-    }
 
-    public Fridge updateFridge(Fridge fridge){
-        String sql = "UPDATE FRIDGE SET type = ?, description = ?, discount = ?, defect = ?, price = ?, energy = ?, registered = ? WHERE number = ?";
-        jdbcTemplate.update(sql, fridge.getType(), fridge.getDescription(), fridge.getDiscount(), fridge.getDefect(), fridge.getPrice(), fridge.getEnergy(), fridge.getRegistered(), fridge.getNumber());
-        return findFridgeByNumber(fridge.getNumber());
-    }
-
-    public Fridge deleteFridge(Integer number) {
-        Fridge fridgeDelete = findFridgeByNumber(number);
-        String sql = "DELETE FROM FRIDGE WHERE number = ?";
-        jdbcTemplate.update(sql, fridgeDelete.getNumber());
-        return fridgeDelete;
-    }
-
-    public Fridge insertFridge(Fridge fridge){
-        String sql = "INSERT INTO FRIDGE(number, type, description, discount, defect, price, energy, registered) " +
-                "VALUES (?, ?, ?, ?, ?, ?, ?, ?);";
-        jdbcTemplate.update(sql, fridge.getNumber(), fridge.getType(), fridge.getDescription(), fridge.getDiscount(), fridge.getDefect(), fridge.getPrice(), fridge.getEnergy(), fridge.getRegistered());
-        return findFridgeByNumber(fridge.getNumber());
+    public Fridge findFridgeByNumber(Integer number) {
+        return fridgeCrud.findById(number).orElse(null);
     }
 
     public List<Fridge> readALL() {
-        return jdbcTemplate.query("SELECT * FROM FRIDGE",(resultSet, rowNum) -> rowMapperFridge.mapRow(resultSet));
+        List<Fridge> list = new ArrayList<>();
+        for (Fridge fridge : fridgeCrud.findAll()) {
+            list.add(fridge);
+        }
+        return list;
+    }
+
+    public Fridge updateFridge(Fridge fridge) {
+        Fridge fridgeUpdate = fridgeCrud.findById(fridge.getNumber())
+                .map(l -> {
+                            l.setType("slim");
+                            l.setDescription("So so");
+                            l.setDiscount(true);
+                            l.setDefect(true);
+                            l.setPrice(BigDecimal.valueOf(1000.8));
+                            l.setEnergy('A');
+                            l.setRegistered(ZonedDateTime.parse("2019-11-19T19:19:54+02"));
+                            return l;
+                        }
+                ).orElse(null);
+        return fridgeCrud.save(fridgeUpdate);
+    }
+
+    public Fridge deleteFridge(Integer number) {
+        return fridgeCrud.findById(number)
+                .map(l -> {
+                            fridgeCrud.deleteById(number);
+                            return l;
+                        }
+                ).orElse(null);
     }
 
     public void deleteALL() {
-        String sql = "DELETE FROM FRIDGE";
-        jdbcTemplate.update(sql);
+        fridgeCrud.deleteAll();
+    }
+
+    public Fridge insertFridge() {
+        Fridge fridge = Fridge.builder()
+                .number(6)
+                .type("Samsung")
+                .description("The best")
+                .discount(false)
+                .defect(false)
+                .price(BigDecimal.valueOf(3000.99))
+                .energy('A')
+                .registered(ZonedDateTime.parse("2023-05-13T07:50:54+02"))
+                .build();
+        return fridgeCrud.save(fridge);
     }
 }
