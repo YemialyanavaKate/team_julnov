@@ -2,12 +2,10 @@ package by.ita.je.models;
 
 import lombok.*;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
 import java.math.BigDecimal;
 import java.time.ZonedDateTime;
+import java.util.List;
 
 @Data
 @Builder
@@ -25,4 +23,12 @@ public class TV {
     private Integer number;
     private Character energy;
     private ZonedDateTime registered;
+
+    @ManyToMany(cascade = CascadeType.ALL,
+             mappedBy = "listTV")
+    private List<Kettle> kettles;
+
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "country_id")
+    private Country country;
 }

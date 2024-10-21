@@ -2,10 +2,7 @@ package by.ita.je.models;
 
 import lombok.*;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
 import java.math.BigDecimal;
 import java.time.ZonedDateTime;
 
@@ -25,4 +22,8 @@ public class Multicooker {
     private Integer number;
     private Character energy;
     private ZonedDateTime registered;
+
+    @ToString.Exclude
+    @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH})
+    private Fridge fridge;
 }

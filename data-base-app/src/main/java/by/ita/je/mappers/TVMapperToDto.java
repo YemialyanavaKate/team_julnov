@@ -7,7 +7,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class TVMapperToDto {
 
-    public TVDto toDTO(TV tv){
+    public TVDto toDTO(TV tv) {
         return new TVDto(
                 tv.getType(),
                 tv.getBrand(),
@@ -15,19 +15,6 @@ public class TVMapperToDto {
                 tv.getDiagonal(),
                 tv.getPrice(),
                 tv.getNumber()
-        );
-    }
-
-    public TV toEntity(TVDto tvDto){
-        return new TV(
-                tvDto.getType(),
-                tvDto.getBrand(),
-                tvDto.getDiscount(),
-                tvDto.getDiagonal(),
-                tvDto.getPrice(),
-                tvDto.getNumber(),
-                null,
-                null
         );
     }
 }
