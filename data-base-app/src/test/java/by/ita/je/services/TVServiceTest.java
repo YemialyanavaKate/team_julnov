@@ -1,7 +1,7 @@
 package by.ita.je.services;
 
 import by.ita.je.models.TV;
-import by.ita.je.repository.TVJdbcTemp;
+import by.ita.je.repository.TVCrudRepository;
 import by.ita.je.services.utils.TestUtils;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -24,23 +24,24 @@ import static org.mockito.Mockito.*;
 class TVServiceTest extends TestUtils {
 
     @Mock
-    private TVJdbcTemp tvJdbcTemp;
+    private TVCrudRepository tvCrudRepository;
     @InjectMocks
     private TVService service;
 
     @Test
     void findTVByNumber_then_return_notNull() {
         TV testTV = buildTV("TV", "LG", false, 15, BigDecimal.valueOf(1000.5), 'A', ZonedDateTime.now());
+        testTV.setNumber(2);
         when(
-                tvJdbcTemp.findTVByNumber(testTV.getNumber())
-        ).thenReturn(testTV);
+                tvCrudRepository.findById(testTV.getNumber())
+        ).thenReturn(Optional.of(testTV));
 
         TV actual = service.findTVByNumber(testTV.getNumber());
 
         assertEquals(actual, testTV);
 
         verify(
-                tvJdbcTemp, new Times(1)).findTVByNumber(testTV.getNumber()
+                tvCrudRepository, new Times(1)).findById(testTV.getNumber()
         );
     }
 
@@ -48,16 +49,15 @@ class TVServiceTest extends TestUtils {
     void findTVByNumber_then_return_null() {
         Random random = new Random();
         Integer number = random.nextInt(Integer.MAX_VALUE);
-        when(
-                tvJdbcTemp.findTVByNumber(number)
-        ).thenReturn(null);
+        when(tvCrudRepository.findById(number)
+        ).thenReturn(Optional.empty());
 
         TV actual = service.findTVByNumber(number);
 
         assertNull(actual);
 
         verify(
-                tvJdbcTemp, new Times(1)).findTVByNumber(number);
+                tvCrudRepository, new Times(1)).findById(number);
     }
 
     @Test
@@ -65,28 +65,29 @@ class TVServiceTest extends TestUtils {
         Random random = new Random();
         Integer number = random.nextInt(Integer.MAX_VALUE);
         when(
-                tvJdbcTemp.findTVByNumber(number)
+                tvCrudRepository.findById(number)
         ).thenThrow(new DataAccessException("There exception") {
         });
 
         Assertions.assertThrows(DataAccessException.class, () -> service.findTVByNumber(number));
         verify(
-                tvJdbcTemp, new Times(1)).findTVByNumber(number);
+                tvCrudRepository, new Times(1)).findById(number);
     }
 
     @Test
     void updateTV_then_return() {
         TV updateTV = buildTV("TV", "Horisont", true, 32, BigDecimal.valueOf(1222.8), 'B', ZonedDateTime.now());
-
-        when(
-                tvJdbcTemp.updateTV(updateTV
-                )).thenReturn(updateTV);
+        when(tvCrudRepository.findById(updateTV.getNumber()))
+                .thenReturn(Optional.of(updateTV));
+        when(tvCrudRepository.save(updateTV))
+                .thenReturn(updateTV);
 
         TV actual = service.updateTV(updateTV);
 
         Assertions.assertEquals(actual, updateTV);
 
-        verify(tvJdbcTemp, new Times(1)).updateTV(updateTV);
+        verify(tvCrudRepository, new Times(1)).findById(updateTV.getNumber());
+        verify(tvCrudRepository, new Times(1)).save(updateTV);
     }
 
     @Test
@@ -94,83 +95,73 @@ class TVServiceTest extends TestUtils {
         TV updateTV = buildTV("TV", "Horisont", true, 32, BigDecimal.valueOf(1222.8), 'B', ZonedDateTime.now());
 
         when(
-                tvJdbcTemp.updateTV(updateTV)
-        ).thenThrow(new DataAccessException("There is exception") {
+                tvCrudRepository.findById(updateTV.getNumber())
+        ).thenThrow(new DataAccessException("") {
         });
 
         Assertions.assertThrows(DataAccessException.class, () -> service.updateTV(updateTV));
 
-        verify(tvJdbcTemp, new Times(1)).updateTV(updateTV);
-        verify(tvJdbcTemp, new Times(0)).findTVByNumber(updateTV.getNumber());
+        verify(tvCrudRepository, new Times(1)).findById(updateTV.getNumber());
+        verify(tvCrudRepository, new Times(0)).save(updateTV);
     }
 
     @Test
     void deleteTV_then_return() {
         TV testTV = buildTV("TV", "LG", false, 15, BigDecimal.valueOf(1000.5), 'A', ZonedDateTime.now());
-        when(tvJdbcTemp.deleteTV(testTV.getNumber())
-        ).thenReturn(testTV);
+        when(tvCrudRepository.findById(testTV.getNumber())
+        ).thenReturn(Optional.of(testTV));
+        doNothing().when(tvCrudRepository).deleteById(testTV.getNumber());
 
         TV actual = service.deleteTV(testTV.getNumber());
 
         Assertions.assertEquals(actual, testTV);
 
-        verify(tvJdbcTemp, new Times(1)).deleteTV(testTV.getNumber());
+        verify(tvCrudRepository, new Times(1)).findById(testTV.getNumber());
+        verify(tvCrudRepository, new Times(1)).deleteById(testTV.getNumber());
+
     }
 
     @Test
     void deleteTV_then_return_null() {
         Random random = new Random();
         Integer number = random.nextInt(Integer.MAX_VALUE);
-        when(tvJdbcTemp.deleteTV(number)
-        ).thenReturn(null);
+        when(tvCrudRepository.findById(number)
+        ).thenReturn(Optional.empty());
 
         TV actual = service.deleteTV(number);
 
         assertNull(actual);
 
-        verify(tvJdbcTemp, new Times(1)).deleteTV(number);
+        verify(tvCrudRepository, new Times(1)).findById(number);
+        verify(tvCrudRepository, new Times(0)).deleteById(number);
     }
 
     @Test
     void deleteTV_then_trows_DataAccessException() {
-        //testTV = buildTV("TV", "LG", false, 15, BigDecimal.valueOf(1000.5), 'A', ZonedDateTime.now());
         Random random = new Random();
         Integer number = random.nextInt(Integer.MAX_VALUE);
-        when(tvJdbcTemp.deleteTV(number)
-        ).thenThrow(new DataAccessException("There is exception") {
-        });
+        when(tvCrudRepository.findById(number)
+        ).thenThrow(new DataAccessException("") {});
 
         Assertions.assertThrows(DataAccessException.class, () -> service.deleteTV(number));
 
-        verify(tvJdbcTemp, new Times(1)
-        ).deleteTV(number);
+        verify(tvCrudRepository, new Times(1)).findById(number);
+        verify(tvCrudRepository, new Times(0)
+        ).deleteById(number);
     }
 
     @Test
     void insertTV_then_return() {
         TV testTV = buildTV("TV", "LG", true, 15, BigDecimal.valueOf(1000.5), 'A', ZonedDateTime.parse("2024-08-08T08:08:54+02"));
         testTV.setNumber(6);
-        when(tvJdbcTemp.insertTV(testTV)
+        when(tvCrudRepository.save(testTV)
         ).thenReturn(testTV);
 
         TV actual = service.insertTV();
 
         Assertions.assertEquals(actual, testTV);
 
-        verify(tvJdbcTemp, new Times(1)).insertTV(testTV);
-    }
-
-    @Test
-    void insertTV_then_trows_DataAccessException() {
-        TV testTV = buildTV("TV", "LG", true, 15, BigDecimal.valueOf(1000.5), 'A', ZonedDateTime.parse("2024-08-08T08:08:54+02"));
-        testTV.setNumber(6);
-        doThrow(new DataAccessException("") {
-        }).when(tvJdbcTemp).insertTV(testTV);
-
-        Assertions.assertThrows(DataAccessException.class, () -> service.insertTV());
-
-        verify(tvJdbcTemp, new Times(1)
-        ).insertTV(testTV);
+        verify(tvCrudRepository, new Times(1)).save(testTV);
     }
 
     @Test
@@ -179,26 +170,26 @@ class TVServiceTest extends TestUtils {
         TV updateTV = buildTV("TV", "Horisont", true, 32, BigDecimal.valueOf(1222.8), 'B', ZonedDateTime.now());
         List<TV> listTV = new ArrayList<>(Arrays.asList(testTV, updateTV));
 
-        when(tvJdbcTemp.readALL()
+        when(tvCrudRepository.findAll()
         ).thenReturn(listTV);
 
         List<TV> actualList = service.readALL();
 
         Assertions.assertEquals(actualList, listTV);
 
-        verify(tvJdbcTemp, new Times(1)).readALL();
+        verify(tvCrudRepository, new Times(1)).findAll();
     }
 
     @Test
     void readALL_then_throws_DataAccessException() {
 
-        when(tvJdbcTemp.readALL()
+        when(tvCrudRepository.findAll()
         ).thenThrow(new DataAccessException("There exception") {
         });
 
         Assertions.assertThrows(DataAccessException.class, () -> service.readALL());
 
-        verify(tvJdbcTemp, new Times(1)).readALL();
+        verify(tvCrudRepository, new Times(1)). findAll();
     }
 
     @Test
@@ -209,7 +200,7 @@ class TVServiceTest extends TestUtils {
 
         Assertions.assertEquals(actualList, Collections.emptyList());
 
-        verify(tvJdbcTemp, new Times(1)).deleteAll();
+        verify(tvCrudRepository, new Times(1)).deleteAll();
     }
 
     @Test
@@ -217,11 +208,11 @@ class TVServiceTest extends TestUtils {
 
         Mockito.doThrow(new DataAccessException("There exception") {
                 })
-                .when(tvJdbcTemp).deleteAll();
+                .when(tvCrudRepository).deleteAll();
 
         Assertions.assertThrows(DataAccessException.class, () -> service.deleteAll());
 
-        verify(tvJdbcTemp, new Times(1)).deleteAll();
+        verify(tvCrudRepository, new Times(1)).deleteAll();
         ;
     }
 }

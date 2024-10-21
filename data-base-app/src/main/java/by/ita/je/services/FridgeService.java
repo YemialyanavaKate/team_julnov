@@ -3,6 +3,7 @@ package by.ita.je.services;
 import by.ita.je.models.Fridge;
 import by.ita.je.repository.FridgeRepoCrud;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.ZonedDateTime;
@@ -31,6 +32,7 @@ public class FridgeService {
         return list;
     }
 
+    @Transactional
     public Fridge updateFridge(Fridge fridge) {
         Fridge fridgeUpdate = fridgeCrud.findById(fridge.getNumber())
                 .map(l -> {
@@ -44,9 +46,13 @@ public class FridgeService {
                             return l;
                         }
                 ).orElse(null);
+        if(fridgeUpdate == null){
+            return fridge;
+        }
         return fridgeCrud.save(fridgeUpdate);
     }
 
+    @Transactional
     public Fridge deleteFridge(Integer number) {
         return fridgeCrud.findById(number)
                 .map(l -> {
@@ -60,6 +66,7 @@ public class FridgeService {
         fridgeCrud.deleteAll();
     }
 
+    @Transactional
     public Fridge insertFridge() {
         Fridge fridge = Fridge.builder()
                 .number(6)

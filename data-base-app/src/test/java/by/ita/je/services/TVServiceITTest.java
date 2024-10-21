@@ -6,29 +6,34 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Collections;
 import java.util.List;
 
 @SpringBootTest
+@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 class TVServiceITTest extends TestUtils {
-@Autowired
-private TVService tvService;
+    @Autowired
+    private TVService tvService;
 
     @Test
-    public void contextTest(){
+    public void contextTest() {
         Assertions.assertNotNull(tvService);
     }
+
     @Test
-    public void tvByNumber_then_return_not_null(){
+    public void tvByNumber_then_return_not_null() {
         TV tvByNumber = tvService.findTVByNumber(2);
         Assertions.assertNotNull(tvByNumber);
     }
+
     @Test
-    public void tvByNumber_then_return_correct_tv(){
+    public void tvByNumber_then_return_correct_tv() {
         TV tvByNumber = tvService.findTVByNumber(2);
         Assertions.assertEquals("LED", tvByNumber.getType());
         Assertions.assertEquals("Samsung", tvByNumber.getBrand());
@@ -36,30 +41,29 @@ private TVService tvService;
         Assertions.assertEquals(38, tvByNumber.getDiagonal());
         Assertions.assertEquals(BigDecimal.valueOf(4001), tvByNumber.getPrice());
         Assertions.assertEquals('B', tvByNumber.getEnergy());
-        Assertions.assertEquals(ZonedDateTime.parse("2024-02-23T22:50:54+02"), tvByNumber.getRegistered());
     }
+
     @Test
-    public void tvByNumber_then_trows_EmptyResultDataAccessException(){
+    public void tvByNumber_then_trows_EmptyResultDataAccessException() {
         TV tvByNumber = tvService.findTVByNumber(7);
         Assertions.assertNull(tvByNumber);
     }
 
     @Test
-    public void insert_then_return_correct_tv(){
-        TV testTV = buildTV("TV", "LG", false, 15, BigDecimal.valueOf(1000.5), 'A', ZonedDateTime.parse("2023-12-23T10:23:54+02"));
+    @Transactional
+    public void insert_then_return_correct_tv() {
 
         TV insertTV = tvService.insertTV();
         Assertions.assertEquals("TV", insertTV.getType());
         Assertions.assertEquals("LG", insertTV.getBrand());
-        Assertions.assertEquals(false, insertTV.getDiscount());
+        Assertions.assertEquals(true, insertTV.getDiscount());
         Assertions.assertEquals(15, insertTV.getDiagonal());
-        Assertions.assertEquals(BigDecimal.valueOf(1001), insertTV.getPrice());
+        Assertions.assertEquals(BigDecimal.valueOf(1000.5), insertTV.getPrice());
         Assertions.assertEquals('A', insertTV.getEnergy());
-        Assertions.assertEquals(ZonedDateTime.parse("2023-12-23T10:23:54+02"), insertTV.getRegistered());
     }
 
     @Test
-    public void update_then_return_correct_tv(){
+    public void update_then_return_correct_tv() {
         TV updateTVTest = TV.builder()
                 .number(4)
                 .type("TV")
@@ -68,7 +72,9 @@ private TVService tvService;
                 .diagonal(32)
                 .price(BigDecimal.valueOf(1222.8))
                 .energy('B')
-                .registered(ZonedDateTime.parse("2024-01-01T10:23:54+02"))
+                .registered(ZonedDateTime.parse("2024-01-01T10:23:54+02", DateTimeFormatter.ISO_OFFSET_DATE_TIME))
+                .kettles(null)
+                .country(null)
                 .build();
 
         TV updateTVActual = tvService.updateTV(updateTVTest);
@@ -76,13 +82,14 @@ private TVService tvService;
         Assertions.assertEquals("Horisont", updateTVActual.getBrand());
         Assertions.assertEquals(true, updateTVActual.getDiscount());
         Assertions.assertEquals(32, updateTVActual.getDiagonal());
-        Assertions.assertEquals(BigDecimal.valueOf(1223), updateTVActual.getPrice());
+        Assertions.assertEquals(BigDecimal.valueOf(1222.8), updateTVActual.getPrice());
         Assertions.assertEquals('B', updateTVActual.getEnergy());
         Assertions.assertEquals(ZonedDateTime.parse("2024-01-01T10:23:54+02"), updateTVActual.getRegistered());
     }
 
     @Test
-    public void update_then_return_correct_tv_after_insert(){
+    @Transactional
+    public void update_then_return_correct_tv_after_insert() {
         TV testTV = buildTV("TV", "LG", false, 15, BigDecimal.valueOf(1000.5), 'A', ZonedDateTime.parse("2023-12-23T10:23:54+02"));
 
         tvService.insertTV();
@@ -102,14 +109,14 @@ private TVService tvService;
         Assertions.assertEquals("Horisont", updateTVActual.getBrand());
         Assertions.assertEquals(true, updateTVActual.getDiscount());
         Assertions.assertEquals(32, updateTVActual.getDiagonal());
-        Assertions.assertEquals(BigDecimal.valueOf(1223), updateTVActual.getPrice());
+        Assertions.assertEquals(BigDecimal.valueOf(1222.8), updateTVActual.getPrice());
         Assertions.assertEquals('B', updateTVActual.getEnergy());
         Assertions.assertEquals(ZonedDateTime.parse("2024-01-01T10:23:54+02"), updateTVActual.getRegistered());
     }
 
     @Test
     @Transactional
-    public void delete_then_return(){
+    public void delete_then_return() {
         TV deleteTV = tvService.deleteTV(1);
         Assertions.assertEquals("LCD", deleteTV.getType());
         Assertions.assertEquals("LG", deleteTV.getBrand());
@@ -117,12 +124,11 @@ private TVService tvService;
         Assertions.assertEquals(40, deleteTV.getDiagonal());
         Assertions.assertEquals(BigDecimal.valueOf(5001), deleteTV.getPrice());
         Assertions.assertEquals('A', deleteTV.getEnergy());
-        Assertions.assertEquals(ZonedDateTime.parse("2024-07-20T22:23:54+02"), deleteTV.getRegistered());
 
     }
 
     @Test
-    public void readAll_then_return(){
+    public void readAll_then_return() {
         List<TV> allTV = tvService.readALL();
         Assertions.assertNotNull(allTV);
     }

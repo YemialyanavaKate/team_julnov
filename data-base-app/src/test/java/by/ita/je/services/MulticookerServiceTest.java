@@ -1,7 +1,7 @@
 package by.ita.je.services;
 
 import by.ita.je.models.Multicooker;
-import by.ita.je.repository.MulticookerRepoEM;
+import by.ita.je.repository.MulticookerCrudRepository;
 import by.ita.je.services.utils.TestUtils;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -18,30 +18,30 @@ import java.time.ZonedDateTime;
 import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class MulticookerServiceTest extends TestUtils {
 
     @Mock
-    private MulticookerRepoEM multicookerRepoEM;
+    private MulticookerCrudRepository multicookerCrud;
     @InjectMocks
     private MulticookerService service;
 
     @Test
     void findMulticookerByNumber_then_return() {
         Multicooker testMulticooker = buildMulticooker("Tefal", "бла-бла-бла", true, 10, BigDecimal.valueOf(1000.5), 'A', ZonedDateTime.now());
+        testMulticooker.setNumber(2);
         Integer number = 2;
-        when(multicookerRepoEM.findMulticookerByNumber(number)
-        ).thenReturn(testMulticooker);
+        when(multicookerCrud.findById(number)
+        ).thenReturn(Optional.of(testMulticooker));
 
         Multicooker actual = service.findMulticookerByNumber(number);
 
         assertEquals(actual, testMulticooker);
 
         verify(
-                multicookerRepoEM, new Times(1)).findMulticookerByNumber(number);
+                multicookerCrud, new Times(1)).findById(number);
     }
 
     @Test
@@ -49,15 +49,15 @@ class MulticookerServiceTest extends TestUtils {
         Random random = new Random();
         Integer number = random.nextInt(Integer.MAX_VALUE);
 
-        when(multicookerRepoEM.findMulticookerByNumber(number)
-        ).thenReturn(null);
+        when(multicookerCrud.findById(number)
+        ).thenReturn(Optional.empty());
 
         Multicooker actual = service.findMulticookerByNumber(number);
 
         assertNull(actual);
 
         verify(
-                multicookerRepoEM, new Times(1)).findMulticookerByNumber(number);
+                multicookerCrud, new Times(1)).findById(number);
     }
 
     @Test
@@ -65,51 +65,57 @@ class MulticookerServiceTest extends TestUtils {
         Random random = new Random();
         Integer number = random.nextInt(Integer.MAX_VALUE);
 
-        when(multicookerRepoEM.findMulticookerByNumber(number))
+        when(multicookerCrud.findById(number))
                 .thenThrow(new DataAccessException("There exception") {
                 });
 
         Assertions.assertThrows(DataAccessException.class, () -> service.findMulticookerByNumber(number));
-        verify(multicookerRepoEM, new Times(1)).findMulticookerByNumber(number);
+        verify(multicookerCrud, new Times(1)).findById(number);
     }
 
     @Test
     void updateMulticooker_then_return() {
         Multicooker updateMulticooker = buildMulticooker("Midea", "So so", true, 91, BigDecimal.valueOf(1111.8), 'B', ZonedDateTime.now());
 
-        when(multicookerRepoEM.updateMulticooker(updateMulticooker)).thenReturn(updateMulticooker);
+        when(multicookerCrud.findById(updateMulticooker.getNumber())
+        ).thenReturn(Optional.of(updateMulticooker));
+        when(multicookerCrud.save(updateMulticooker)
+        ).thenReturn(updateMulticooker);
 
         Multicooker actual = service.updateMulticooker(updateMulticooker);
 
         Assertions.assertEquals(actual, updateMulticooker);
-        verify(multicookerRepoEM, new Times(1)).updateMulticooker(updateMulticooker);
+        verify(multicookerCrud, new Times(1)).findById(updateMulticooker.getNumber());
+        verify(multicookerCrud, new Times(1)).save(updateMulticooker);
     }
 
     @Test
     void updateMulticooker_then_throws_DataAccessException() {
         Multicooker updateMulticooker = buildMulticooker("Midea", "So so", true, 91, BigDecimal.valueOf(1111.8), 'B', ZonedDateTime.now());
 
-        when(multicookerRepoEM.updateMulticooker(updateMulticooker)).thenThrow(new DataAccessException("There is exception") {
+        when(multicookerCrud.findById(updateMulticooker.getNumber())
+        ).thenThrow(new DataAccessException("") {
         });
 
         Assertions.assertThrows(DataAccessException.class, () -> service.updateMulticooker(updateMulticooker));
 
-        verify(multicookerRepoEM, new Times(1)).updateMulticooker(updateMulticooker);
+        verify(multicookerCrud, new Times(1)).findById(updateMulticooker.getNumber());
+        verify(multicookerCrud, new Times(0)).save(updateMulticooker);
     }
 
     @Test
     void deleteMulticooker_then_return() {
         Multicooker testMulticooker = buildMulticooker("NonRemovablePanels", "for sweet", false, 20001, BigDecimal.valueOf(99.8), 'A', ZonedDateTime.parse("2024-05-11T23:23:54+02"));
-        Integer number = 2;
 
-        when(multicookerRepoEM.deleteMulticooker(number))
-                .thenReturn(testMulticooker);
+        when(multicookerCrud.findById(testMulticooker.getNumber())).thenReturn(Optional.of(testMulticooker));
+        doNothing().when(multicookerCrud).deleteById(testMulticooker.getNumber());
 
-        Multicooker actual = service.deleteMulticooker(number);
+        Multicooker actual = service.deleteMulticooker(testMulticooker.getNumber());
 
         Assertions.assertEquals(actual, testMulticooker);
 
-        verify(multicookerRepoEM, new Times(1)).deleteMulticooker(number);
+        verify(multicookerCrud, new Times(1)).findById(testMulticooker.getNumber());
+        verify(multicookerCrud, new Times(1)).deleteById(testMulticooker.getNumber());
 
     }
 
@@ -118,62 +124,45 @@ class MulticookerServiceTest extends TestUtils {
         Random random = new Random();
         Integer number = random.nextInt(Integer.MAX_VALUE);
 
-        when(multicookerRepoEM.deleteMulticooker(number)
-        ).thenReturn(null);
+        when(multicookerCrud.findById(number)
+        ).thenReturn(Optional.empty());
 
         Multicooker actual = service.deleteMulticooker(number);
 
         assertNull(actual);
 
-        verify(multicookerRepoEM, new Times(1)
-        ).deleteMulticooker(number);
+        verify(multicookerCrud, new Times(1)).findById(number);
+        verify(multicookerCrud, new Times(0)).deleteById(number);
     }
 
     @Test
     void deleteMulticooker_then_trows_DataAccessException() {
         Random random = new Random();
         Integer number = random.nextInt(Integer.MAX_VALUE);
-        when(multicookerRepoEM.deleteMulticooker(number))
-                .thenThrow(new DataAccessException("There is exception") {
-                           }
-                );
+        when(multicookerCrud.findById(number))
+                .thenThrow(new DataAccessException("") {
+                });
 
         Assertions.assertThrows(DataAccessException.class, () -> service.deleteMulticooker(number));
 
-        verify(multicookerRepoEM, new Times(1)
-        ).deleteMulticooker(number);
+        verify(multicookerCrud, new Times(1)).findById(number);
+        verify(multicookerCrud, new Times(0)).deleteById(number);
     }
 
     @Test
     void insertMulticooker_then_return() {
-        Multicooker testMulticooker = buildMulticooker("Tefal", "бла-бла-бла", true, 10, BigDecimal.valueOf(1000.5), 'A', ZonedDateTime.now());
-
-        when(multicookerRepoEM.insertMulticooker(testMulticooker)
-        ).thenReturn(testMulticooker);
-        when(multicookerRepoEM.insertMulticooker(testMulticooker))
+        Multicooker testMulticooker = buildMulticooker("Midea", "So so", true, 91, BigDecimal.valueOf(1112), 'B', ZonedDateTime.parse("2024-01-01T10:23:54+02"));
+        testMulticooker.setNumber(5);
+        when(multicookerCrud.save(testMulticooker))
                 .thenReturn(testMulticooker);
 
-        Multicooker actual = service.insertMulticooker(testMulticooker);
+        Multicooker actual = service.insertMulticooker();
 
         Assertions.assertEquals(actual, testMulticooker);
 
-        verify(multicookerRepoEM, new Times(1)
-        ).insertMulticooker(testMulticooker);
+        verify(multicookerCrud, new Times(1)).save(testMulticooker);
     }
 
-    @Test
-    void insertMulticooker_then_trows_DataAccessException() {
-        Multicooker testMulticooker = buildMulticooker("Tefal", "бла-бла-бла", true, 10, BigDecimal.valueOf(1000.5), 'A', ZonedDateTime.now());
-
-        when(multicookerRepoEM.insertMulticooker(testMulticooker)
-        ).thenThrow(new DataAccessException("There is DataAccessException") {
-        });
-
-        Assertions.assertThrows(DataAccessException.class, () -> service.insertMulticooker(testMulticooker));
-
-        verify(multicookerRepoEM, new Times(1)
-        ).insertMulticooker(testMulticooker);
-    }
 
     @Test
     void readALL_then_return() {
@@ -181,26 +170,26 @@ class MulticookerServiceTest extends TestUtils {
         Multicooker updateMulticooker = buildMulticooker("Midea", "So so", true, 91, BigDecimal.valueOf(1111.8), 'B', ZonedDateTime.now());
         List<Multicooker> listMulticooker = new ArrayList<>(Arrays.asList(testMulticooker, updateMulticooker));
 
-        when(multicookerRepoEM.readAll()
+        when(multicookerCrud.findAll()
         ).thenReturn(listMulticooker);
 
         List<Multicooker> actualList = service.readALL();
 
         Assertions.assertEquals(actualList, listMulticooker);
 
-        verify(multicookerRepoEM, new Times(1)).readAll();
+        verify(multicookerCrud, new Times(1)).findAll();
     }
 
     @Test
     void readALL_then_throws_DataAccessException() {
 
-        when(multicookerRepoEM.readAll()
-        ).thenThrow(new DataAccessException("There exception") {
+        when(multicookerCrud.findAll()
+        ).thenThrow(new DataAccessException("") {
         });
 
         Assertions.assertThrows(DataAccessException.class, () -> service.readALL());
 
-        verify(multicookerRepoEM, new Times(1)).readAll();
+        verify(multicookerCrud, new Times(1)).findAll();
     }
 
     @Test
@@ -212,16 +201,16 @@ class MulticookerServiceTest extends TestUtils {
 
         Assertions.assertEquals(actualList, Collections.emptyList());
 
-        verify(multicookerRepoEM, new Times(1)).deleteALL();
+        verify(multicookerCrud, new Times(1)).deleteAll();
     }
 
     @Test
     void deleteAll_then_throws_DataAccessException() {
         Mockito.doThrow(new DataAccessException("There is exception") {
-        }).when(multicookerRepoEM).deleteALL();
+        }).when(multicookerCrud).deleteAll();
 
         Assertions.assertThrows(DataAccessException.class, () -> service.deleteALL());
 
-        verify(multicookerRepoEM, new Times(1)).deleteALL();
+        verify(multicookerCrud, new Times(1)).deleteAll();
     }
 }

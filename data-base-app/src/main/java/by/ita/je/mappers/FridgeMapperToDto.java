@@ -17,16 +17,4 @@ public class FridgeMapperToDto {
                 fridge.getNumber()
         );
     }
-        public Fridge toEntity(FridgeDto fridgeDto){
-            return new Fridge(
-                    fridgeDto.getType(),
-                    fridgeDto.getDescription(),
-                    fridgeDto.getDiscount(),
-                    fridgeDto.getDefect(),
-                    fridgeDto.getPrice(),
-                    fridgeDto.getNumber(),
-                    null,
-                    null
-            );
-        }
 }

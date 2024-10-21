@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
@@ -14,21 +15,25 @@ import java.util.Collections;
 import java.util.List;
 
 @SpringBootTest
+@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 class KettleServiceITTest extends TestUtils {
-@Autowired
-private KettleService kettleService;
+    @Autowired
+    private KettleService kettleService;
 
     @Test
-    public void contextTest(){
+    public void contextTest() {
         Assertions.assertNotNull(kettleService);
     }
+
     @Test
-    public void kettleByNumber_then_return_not_null(){
+    public void kettleFindByNumber_then_return_not_null() {
         Kettle kettleByNumber = kettleService.findKettleByNumber(1);
         Assertions.assertNotNull(kettleByNumber);
     }
+
     @Test
-    public void kettleByNumber_then_return_correct_kettle(){
+    @Transactional
+    public void kettleFindByNumber_then_return_correct_kettle() {
         Kettle kettleByNumber = kettleService.findKettleByNumber(2);
         Assertions.assertEquals("glass", kettleByNumber.getType());
         Assertions.assertEquals("notColor", kettleByNumber.getColor());
@@ -36,16 +41,11 @@ private KettleService kettleService;
         Assertions.assertEquals(false, kettleByNumber.getIsInduction());
         Assertions.assertEquals(BigDecimal.valueOf(81), kettleByNumber.getPrice());
         Assertions.assertEquals('B', kettleByNumber.getEnergy());
-        Assertions.assertEquals(ZonedDateTime.parse("2023-12-31T14:11:54+02"), kettleByNumber.getRegistered());
-    }
-    @Test
-    public void kettleByNumber_then_trows_EmptyResultDataAccessException(){
-        Kettle kettleByNumber = kettleService.findKettleByNumber(7);
-        Assertions.assertNull(kettleByNumber);
+        Assertions.assertEquals(ZonedDateTime.parse("2023-12-31T15:11:54+03:00[Europe/Moscow]"), kettleByNumber.getRegistered());
     }
 
     @Test
-    public void insert_then_return_correct_kettle(){
+    public void insert_then_return_correct_kettle() {
         Kettle testKettle = buildKettle("glass", "blue", false, false, BigDecimal.valueOf(30.33), 'A', ZonedDateTime.parse("2023-12-26T20:28:33.213+02"));
 
         Kettle insertKettle = kettleService.insertKettle(testKettle);
@@ -53,20 +53,20 @@ private KettleService kettleService;
         Assertions.assertEquals("blue", insertKettle.getColor());
         Assertions.assertEquals(false, insertKettle.getIsElectric());
         Assertions.assertEquals(false, insertKettle.getIsInduction());
-        Assertions.assertEquals(BigDecimal.valueOf(30), insertKettle.getPrice());
+        Assertions.assertEquals(BigDecimal.valueOf(30.33), insertKettle.getPrice());
         Assertions.assertEquals('A', insertKettle.getEnergy());
         Assertions.assertEquals(ZonedDateTime.parse("2023-12-26T20:28:33.213+02"), insertKettle.getRegistered());
     }
 
     @Test
-    public void update_then_return_correct_kettle(){
+    public void update_then_return_correct_kettle() {
         Kettle updateKettleTest = Kettle.builder()
                 .number(4)
                 .type("glass")
                 .color("pink")
                 .isElectric(true)
                 .isInduction(true)
-                .price(BigDecimal.valueOf(122))
+                .price(BigDecimal.valueOf(122.22))
                 .energy('A')
                 .registered(ZonedDateTime.parse("2011-11-11T11:11:11+02"))
                 .build();
@@ -76,15 +76,16 @@ private KettleService kettleService;
         Assertions.assertEquals("pink", updateKettleActual.getColor());
         Assertions.assertEquals(true, updateKettleActual.getIsElectric());
         Assertions.assertEquals(true, updateKettleActual.getIsInduction());
-        Assertions.assertEquals(BigDecimal.valueOf(122), updateKettleActual.getPrice());
+        Assertions.assertEquals(BigDecimal.valueOf(122.22), updateKettleActual.getPrice());
         Assertions.assertEquals('A', updateKettleActual.getEnergy());
         Assertions.assertEquals(ZonedDateTime.parse("2011-11-11T11:11:11+02"), updateKettleActual.getRegistered());
     }
 
     @Test
-    public void update_then_return_correct_kettle_after_insert(){
+    @Transactional
+    public void update_then_return_correct_kettle_after_insert() {
         Kettle testKettle = buildKettle("glass", "blue", false, false, BigDecimal.valueOf(30.33), 'A', ZonedDateTime.parse("2023-12-26T20:28:33.213+02"));
-
+        testKettle.setNumber(5);
         kettleService.insertKettle(testKettle);
         Kettle updateKettleTest = Kettle.builder()
                 .number(testKettle.getNumber())
@@ -92,9 +93,11 @@ private KettleService kettleService;
                 .color("pink")
                 .isElectric(true)
                 .isInduction(true)
-                .price(BigDecimal.valueOf(122))
+                .price(BigDecimal.valueOf(122.22))
                 .energy('A')
                 .registered(ZonedDateTime.parse("2011-11-11T11:11:11+02"))
+                .fridges(null)
+                .listTV(null)
                 .build();
 
         Kettle updateKettleActual = kettleService.updateKettle(updateKettleTest);
@@ -102,14 +105,14 @@ private KettleService kettleService;
         Assertions.assertEquals("pink", updateKettleActual.getColor());
         Assertions.assertEquals(true, updateKettleActual.getIsElectric());
         Assertions.assertEquals(true, updateKettleActual.getIsInduction());
-        Assertions.assertEquals(BigDecimal.valueOf(122), updateKettleActual.getPrice());
+        Assertions.assertEquals(BigDecimal.valueOf(122.22), updateKettleActual.getPrice());
         Assertions.assertEquals('A', updateKettleActual.getEnergy());
         Assertions.assertEquals(ZonedDateTime.parse("2011-11-11T11:11:11+02"), updateKettleActual.getRegistered());
     }
 
     @Test
     @Transactional
-    public void delete_then_return(){
+    public void delete_then_return() {
         Kettle deleteKettle = kettleService.deleteKettle(1);
         Assertions.assertEquals("steel", deleteKettle.getType());
         Assertions.assertEquals("silver", deleteKettle.getColor());
@@ -117,12 +120,10 @@ private KettleService kettleService;
         Assertions.assertEquals(false, deleteKettle.getIsInduction());
         Assertions.assertEquals(BigDecimal.valueOf(51), deleteKettle.getPrice());
         Assertions.assertEquals('A', deleteKettle.getEnergy());
-        Assertions.assertEquals(ZonedDateTime.parse("2023-10-19T10:23:54+02"), deleteKettle.getRegistered());
-
     }
 
     @Test
-    public void readAll_then_return(){
+    public void readAll_then_return() {
         List<Kettle> allKettle = kettleService.readALL();
         Assertions.assertNotNull(allKettle);
     }

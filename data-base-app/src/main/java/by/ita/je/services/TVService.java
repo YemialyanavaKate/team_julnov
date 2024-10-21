@@ -1,25 +1,29 @@
 package by.ita.je.services;
 
 import by.ita.je.models.TV;
-import by.ita.je.repository.TVJdbcTemp;
+import by.ita.je.repository.TVCrudRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.ZonedDateTime;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 @Service
 public class TVService {
-    private final TVJdbcTemp tvJdbcTemp;
+    private final TVCrudRepository tvCrudRepository;
 
-    public TVService(TVJdbcTemp tvJdbcTemp) {
-        this.tvJdbcTemp = tvJdbcTemp;
+    public TVService(TVCrudRepository tvCrudRepository) {
+        this.tvCrudRepository = tvCrudRepository;
     }
 
     public TV findTVByNumber(Integer number) {
-        return tvJdbcTemp.findTVByNumber(number);
+        return tvCrudRepository.findById(number).orElse(null);
     }
 
+    @Transactional
     public TV insertTV() {
         TV tv = TV.builder()
                 .number(6)
@@ -31,26 +35,42 @@ public class TVService {
                 .energy('A')
                 .registered(ZonedDateTime.parse("2024-08-08T08:08:54+02"))
                 .build();
-        return tvJdbcTemp.insertTV(tv);
+        return tvCrudRepository.save(tv);
     }
 
+    @Transactional
     public TV updateTV(TV tv) {
-        tv.setBrand("Philips");
-        tv.setDiagonal(42);
-        tv.setPrice(BigDecimal.valueOf(7000.01));
-        return tvJdbcTemp.updateTV(tv);
+        TV tvUpdate = tvCrudRepository.findById(tv.getNumber())
+                .map(l -> {
+                    l.setBrand("Philips");
+                    l.setDiagonal(42);
+                    l.setPrice(BigDecimal.valueOf(7000.01));
+                    return l;
+                }).orElse(null);
+        if (tvUpdate == null) {
+            return tv;
+        }
+        return tvCrudRepository.save(tv);
     }
+
 
     public TV deleteTV(Integer number) {
-        return tvJdbcTemp.deleteTV(number);
+        return tvCrudRepository.findById(number)
+                .map(l -> {
+                            tvCrudRepository.deleteById(number);
+                            return l;
+                        }
+                ).orElse(null);
     }
 
 
     public List<TV> readALL() {
-        return tvJdbcTemp.readALL();
+        return StreamSupport.stream(tvCrudRepository.findAll().spliterator(), false)
+                .collect(Collectors.toList());
     }
 
+    @Transactional
     public void deleteAll() {
-        tvJdbcTemp.deleteAll();
+        tvCrudRepository.deleteAll();
     }
 }
