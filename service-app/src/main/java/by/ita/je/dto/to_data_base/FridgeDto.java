@@ -1,4 +1,4 @@
-package by.ita.je.dto;
+package by.ita.je.dto.to_data_base;
 
 import lombok.*;
 
@@ -16,10 +16,8 @@ public class FridgeDto {
     private Boolean defect;
     private BigDecimal price;
     private Integer number;
-    @Singular
     private List<MulticookerDto> multicookerDtos;
     private KettleDto kettleDto;
-
 }
 
 

@@ -1,6 +1,9 @@
-package by.ita.je.dto;
+package by.ita.je.dto.to_web;
 
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -9,17 +12,15 @@ import java.util.List;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class FridgeDto {
+public class FridgeWebDto {
     private String type;
     private String description;
     private Boolean discount;
     private Boolean defect;
     private BigDecimal price;
     private Integer number;
-    @Singular
-    private List<MulticookerDto> multicookerDtos;
-    private KettleDto kettleDto;
-
+    private List<MulticookerWebDto> multicookerWebDtos;
+    private KettleWebDto kettleWebDto;
 }
 
 

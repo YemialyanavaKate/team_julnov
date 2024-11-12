@@ -1,4 +1,4 @@
-package by.ita.je.dto;
+package by.ita.je.dto.to_data_base;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;

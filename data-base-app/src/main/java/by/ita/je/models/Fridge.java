@@ -34,7 +34,9 @@ public class Fridge {
     private Character energy;
     private ZonedDateTime registered;
 
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "fridge")
+    @OneToMany(cascade = CascadeType.ALL,
+            // orphanRemoval = true,
+            mappedBy = "fridge")
     private List<Multicooker> Multicookers;
 
     @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH})

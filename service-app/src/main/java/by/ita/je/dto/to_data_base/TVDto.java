@@ -1,4 +1,4 @@
-package by.ita.je.dto;
+package by.ita.je.dto.to_data_base;
 
 import lombok.*;
 
@@ -9,20 +9,13 @@ import java.util.List;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class FridgeDto {
+public class TVDto {
     private String type;
-    private String description;
+    private String brand;
     private Boolean discount;
-    private Boolean defect;
+    private Integer diagonal;
     private BigDecimal price;
     private Integer number;
-    @Singular
-    private List<MulticookerDto> multicookerDtos;
-    private KettleDto kettleDto;
-
+    private List<KettleDto> kettleDtos;
+    private CountryDto countryDto;
 }
-
-
-
-
-

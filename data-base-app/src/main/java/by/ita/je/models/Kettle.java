@@ -34,16 +34,14 @@ public class Kettle {
     private Character energy;
     private ZonedDateTime registered;
 
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "kettle")
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "kettle")
     private List<Fridge> fridges;
 
     @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH})
     @JoinTable(
             name = "kttl_tv",
             joinColumns = @JoinColumn(name = "kttl_number"),
-                    //, referencedColumnName = "number")},
             inverseJoinColumns = @JoinColumn(name = "tv_number")
-                    //,referencedColumnName = "number")}
     )
     private List<TV> listTV;
 }
