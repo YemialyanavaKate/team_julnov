@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta content="text/html; charset=UTF-8" http-equiv="Content-Type">
+    <title>ERROR</title>
+</head>
+<body>
+<h1><strong>Don't worry!</strong></h1>
+<h1>You will see an error message</h1>
+
+<p th:text="${errorMessage}"></p>
+
+<a th:href="@{/fridge/create}" id="create">
+    <button type="button">Return to home page</button></a>
+
+</body>
+</html>

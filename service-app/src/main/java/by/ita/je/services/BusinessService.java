@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.ArrayList;
@@ -53,7 +54,6 @@ public class BusinessService {
         return fridge;
     }
 
-
     public Fridge findFridgePlusTVAndCountryByConditional(Integer number, Integer parameter) {
 
         Predicate<Integer> predicate = i -> (i < parameter);
@@ -76,8 +76,7 @@ public class BusinessService {
         return fridge;
     }
 
-
-    public Fridge findFridge(Integer number) {
+    public Fridge findFridge(Integer number) throws HttpServerErrorException.InternalServerError {
 
         String url = buildUrl(ROOT_FRIDGE, METOD_READ) + "/" + number;
 
@@ -95,7 +94,6 @@ public class BusinessService {
         }
         return fridgeMapper.toEntityFromDataBase(fridgeDto);
     }
-
 
     private String buildUrl(String root, String method) {
         return HOST_URL.concat(root).concat(method);
