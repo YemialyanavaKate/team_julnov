@@ -1,22 +1,23 @@
-package by.ita.je.dto;
+package by.ita.je.models;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 
 import java.math.BigDecimal;
+import java.time.ZonedDateTime;
 
 @Data
-@Builder
 @NoArgsConstructor
+@Builder
 @AllArgsConstructor
-public class MulticookerDto {
+public class Multicooker {
     private String type;
     private String description;
     private Boolean isTouchScreen;
     private Integer numberModes;
     private BigDecimal price;
     private Integer number;
+    private Character energy;
+    private ZonedDateTime registered;
 
-    @JsonIgnore
-    private FridgeDto fridgeDto;
+    private Fridge fridge;
 }

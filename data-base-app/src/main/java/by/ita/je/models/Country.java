@@ -34,6 +34,5 @@ public class Country {
     }
 
     @OneToOne(cascade = CascadeType.ALL)
-    //@JoinColumn(name = "tv_number")
     private TV tv;
 }

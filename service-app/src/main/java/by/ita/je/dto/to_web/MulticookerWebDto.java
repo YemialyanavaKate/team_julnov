@@ -1,7 +1,9 @@
-package by.ita.je.dto;
+package by.ita.je.dto.to_web;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 
@@ -9,14 +11,11 @@ import java.math.BigDecimal;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class MulticookerDto {
+public class MulticookerWebDto {
     private String type;
     private String description;
     private Boolean isTouchScreen;
     private Integer numberModes;
     private BigDecimal price;
     private Integer number;
-
-    @JsonIgnore
-    private FridgeDto fridgeDto;
 }

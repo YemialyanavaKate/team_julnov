@@ -1,28 +1,26 @@
-package by.ita.je.dto;
+package by.ita.je.models;
 
 import lombok.*;
 
 import java.math.BigDecimal;
+import java.time.ZonedDateTime;
 import java.util.List;
 
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class FridgeDto {
+public class Fridge {
     private String type;
     private String description;
     private Boolean discount;
     private Boolean defect;
     private BigDecimal price;
     private Integer number;
-    @Singular
-    private List<MulticookerDto> multicookerDtos;
-    private KettleDto kettleDto;
+    private Character energy;
+    private ZonedDateTime registered;
 
+    //@Singular
+    private List<Multicooker> Multicookers;
+    private Kettle kettle;
 }
-
-
-
-
-

@@ -2,23 +2,22 @@ package by.ita.je.controllers;
 
 import by.ita.je.dto.FridgeDto;
 import by.ita.je.mappers.FridgeMapperToDto;
+import by.ita.je.mappers.MapperDecorator;
 import by.ita.je.models.Fridge;
 import by.ita.je.services.FridgeService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
+@RequiredArgsConstructor
 @RestController
 @RequestMapping(path = "/fridge")
 public class FridgeController {
     private final FridgeService fridgeService;
     private final FridgeMapperToDto fridgeMapper;
-
-    public FridgeController(FridgeService fridgeService, FridgeMapperToDto fridgeMapper) {
-        this.fridgeService = fridgeService;
-        this.fridgeMapper = fridgeMapper;
-    }
+    private final MapperDecorator mapperDecorator;
 
     @PostMapping("/create")
     public FridgeDto create() {
@@ -26,9 +25,17 @@ public class FridgeController {
         return fridgeMapper.toDTO(fridgeSave);
     }
 
-    @GetMapping("/read")
-    public FridgeDto read(@RequestParam Integer number) {
-        return fridgeMapper.toDTO(fridgeService.findFridgeByNumber(number));
+    @PostMapping("/save")
+    public FridgeDto save(@RequestBody FridgeDto fridgeDto) {
+        Fridge fridge = fridgeMapper.toEntity(fridgeDto);
+        Fridge fridgeSave = fridgeService.saveFridge(fridge);
+        return fridgeMapper.toDTO(fridgeSave);
+    }
+
+
+    @GetMapping("/read/{number}")
+    public FridgeDto read(@PathVariable(name = "number") Integer number) {
+        return mapperDecorator.map(fridgeService.findFridgeByNumber(number));
     }
 
     @GetMapping("/read/all")
