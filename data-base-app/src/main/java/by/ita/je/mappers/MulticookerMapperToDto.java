@@ -8,13 +8,16 @@ import org.springframework.stereotype.Component;
 public class MulticookerMapperToDto {
 
     public MulticookerDto toDTO(Multicooker multicooker) {
-        return new MulticookerDto(
-                multicooker.getType(),
-                multicooker.getDescription(),
-                multicooker.getIsTouchScreen(),
-                multicooker.getNumberModes(),
-                multicooker.getPrice(),
-                multicooker.getNumber()
-        );
+        if (multicooker == null) {
+            return null;
+        }
+        return MulticookerDto.builder()
+                .type(multicooker.getType())
+                .description(multicooker.getDescription())
+                .isTouchScreen(multicooker.getIsTouchScreen())
+                .numberModes(multicooker.getNumberModes())
+                .price(multicooker.getPrice())
+                .number(multicooker.getNumber())
+                .build();
     }
 }

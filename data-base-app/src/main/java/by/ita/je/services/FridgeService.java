@@ -2,6 +2,7 @@ package by.ita.je.services;
 
 import by.ita.je.models.Fridge;
 import by.ita.je.repository.FridgeRepoCrud;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -11,14 +12,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class FridgeService {
 
     private final FridgeRepoCrud fridgeCrud;
-
-    public FridgeService(FridgeRepoCrud fridgeCrud) {
-        this.fridgeCrud = fridgeCrud;
-    }
-
 
     public Fridge findFridgeByNumber(Integer number) {
         return fridgeCrud.findById(number).orElse(null);
@@ -34,22 +31,12 @@ public class FridgeService {
 
     @Transactional
     public Fridge updateFridge(Fridge fridge) {
-        Fridge fridgeUpdate = fridgeCrud.findById(fridge.getNumber())
+
+        return fridgeCrud.findById(fridge.getNumber())
                 .map(l -> {
-                            l.setType("slim");
-                            l.setDescription("So so");
-                            l.setDiscount(true);
-                            l.setDefect(true);
-                            l.setPrice(BigDecimal.valueOf(1000.8));
-                            l.setEnergy('A');
-                            l.setRegistered(ZonedDateTime.parse("2019-11-19T19:19:54+02"));
-                            return l;
-                        }
-                ).orElse(null);
-        if(fridgeUpdate == null){
-            return fridge;
-        }
-        return fridgeCrud.save(fridgeUpdate);
+                    fridgeCrud.save(fridge);
+                    return l;
+                }).orElse(null);
     }
 
     @Transactional
@@ -78,6 +65,11 @@ public class FridgeService {
                 .energy('A')
                 .registered(ZonedDateTime.parse("2023-05-13T07:50:54+02"))
                 .build();
+        return fridgeCrud.save(fridge);
+    }
+
+    @Transactional
+    public Fridge saveFridge(Fridge fridge) {
         return fridgeCrud.save(fridge);
     }
 }

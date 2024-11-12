@@ -1,8 +1,11 @@
 package by.ita.je.dto;
 
+import by.ita.je.models.Country;
 import lombok.*;
 
 import java.math.BigDecimal;
+import java.util.List;
+
 @Data
 @Builder
 @NoArgsConstructor
@@ -14,4 +17,8 @@ public class TVDto {
     private Integer diagonal;
     private BigDecimal price;
     private Integer number;
+
+    @Singular
+    private List<KettleDto> kettleDtos;
+    private Country country;
 }

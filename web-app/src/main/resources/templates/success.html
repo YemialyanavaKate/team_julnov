@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta content="text/html; charset=UTF-8" http-equiv="Content-Type">
+    <title>Great</title>
+</head>
+<body>
+<h1>Fridge successfully created!</h1>
+<p><strong>Type:</strong> <span th:text="${fridge.type}"></span></p>
+<p><strong>Description:</strong> <span th:text="${fridge.description}"></span></p>
+<p><strong>Discount:</strong> <span th:text="${fridge.discount}"></span></p>
+<p><strong>Defect:</strong> <span th:text="${fridge.defect}"></span></p>
+<p><strong>Price:</strong> <span th:text="${fridge.price}"></span></p>
+<p><strong>Number:</strong> <span th:text="${fridge.number}"></span></p>
+
+<a th:href="@{/fridge/create}" id="create">
+    <button type="button">create another fridge</button>
+</a>
+</body>
+</html>

@@ -34,6 +34,8 @@ public class TVService {
                 .price(BigDecimal.valueOf(1000.5))
                 .energy('A')
                 .registered(ZonedDateTime.parse("2024-08-08T08:08:54+02"))
+                .kettles(null)
+                .country(null)
                 .build();
         return tvCrudRepository.save(tv);
     }
@@ -54,6 +56,7 @@ public class TVService {
     }
 
 
+    @Transactional
     public TV deleteTV(Integer number) {
         return tvCrudRepository.findById(number)
                 .map(l -> {

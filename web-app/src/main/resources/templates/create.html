@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta content="text/html; charset=UTF-8" http-equiv="Content-Type">
+    <title>Создать Fridge</title>
+</head>
+<body>
+<h1>Welcome!</h1>
+<h1>Создать новый Fridge</h1>
+
+<form th:action="@{/fridge/create}" th:object="${fridge}" method="post">
+    <label for="type">Type:</label>
+    <input type="text" id="type" th:field="*{type}"/><br><br>
+
+    <label for="description">Description:</label>
+    <input type="text" id="description" th:field="*{description}"/><br><br>
+
+    <label for="discount">Discount:</label>
+    <input type="text" id="discount" th:field="*{discount}"/><br><br>
+
+    <label for="defect">Defect:</label>
+    <input type="text" id="defect" th:field="*{defect}"/><br><br>
+
+    <label for="price">Price:</label>
+    <input type="text" id="price" th:field="*{price}"/><br><br>
+
+    <label for="number">Number:</label>
+    <input type="text" id="number" th:field="*{number}"/><br><br>
+
+    <button type="submit">Создать</button>
+</form>
+</body>
+</html>
