@@ -34,7 +34,7 @@ public class Kettle {
     private Character energy;
     private ZonedDateTime registered;
 
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "kettle")
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "kettle")
     private List<Fridge> fridges;
 
     @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH})

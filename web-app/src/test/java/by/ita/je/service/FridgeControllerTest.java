@@ -4,7 +4,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -60,16 +59,18 @@ public class FridgeControllerTest {
 
     @Test
     public void testAddFridge() throws Exception {
-        String requestBody ="{\\\"kettleWebDto\\\": {\\\"type\\\": \\\"steel\\\"}";
+        String requestBody = "{\\\"kettleWebDto\\\": {\\\"type\\\": \\\"steel\\\"}";
         mockMvc.perform(post("/fridge/add")
                         .param("number", "1")
                         .content(requestBody))
                 .andExpect(status().isOk())
                 .andExpect(view().name("addSuccess.html"))
-                .andExpect(model().attributeExists("fridge"));;
+                .andExpect(model().attributeExists("fridge"));
+
     }
+
     @Test
-    public void testShowСonditionalForm() throws Exception {
+    public void testShowConditionalForm() throws Exception {
         mockMvc.perform(get("/fridge/update"))
                 .andExpect(status().isOk())
                 .andExpect(view().name("conditional.html"));
@@ -77,7 +78,7 @@ public class FridgeControllerTest {
 
     @Test
     public void testUpdateByConditionalFridge() throws Exception {
-        String requestBody ="{{\n" +
+        String requestBody = "{{\n" +
                 "    \"number\": 1,\n" +
                 "    \"parameter\": 3\n" +
                 " \n" +
@@ -88,7 +89,7 @@ public class FridgeControllerTest {
                         .content(requestBody))
                 .andExpect(status().isOk())
                 .andExpect(view().name("conditionalresults.html"))
-                .andExpect(model().attributeExists("fridge"));;
+                .andExpect(model().attributeExists("fridge"));
     }
 
 }
