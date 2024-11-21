@@ -88,13 +88,10 @@ class FridgeServiceITTest extends TestUtils {
     }
 
     @Test
-    public void update_then_return_correct_fridge_after_insert() {
-        Fridge testFridge = new Fridge("Samsung", "The best", false, false, BigDecimal.valueOf(3000.99), 111, 'A', ZonedDateTime.parse("2023-12-23T10:23:54+02"), null, null);
-
-        fridgeService.insertFridge();
-        Fridge updateFridgeTest = Fridge.builder()
-                .number(testFridge.getNumber())
-                .type("slim")
+    public void save_then_return_correct_fridge() {
+        Fridge fridgeTest = Fridge.builder()
+                .number(111)
+                .type("Samsung")
                 .description("So so")
                 .discount(true)
                 .defect(true)
@@ -103,14 +100,15 @@ class FridgeServiceITTest extends TestUtils {
                 .registered(ZonedDateTime.parse("2019-11-19T19:19:54+02"))
                 .build();
 
-        Fridge updateFridgeActual = fridgeService.updateFridge(updateFridgeTest);
-        Assertions.assertEquals("slim", updateFridgeActual.getType());
-        Assertions.assertEquals("So so", updateFridgeActual.getDescription());
-        Assertions.assertEquals(true, updateFridgeActual.getDiscount());
-        Assertions.assertEquals(true, updateFridgeActual.getDefect());
-        Assertions.assertEquals(BigDecimal.valueOf(1000.8), updateFridgeActual.getPrice());
-        Assertions.assertEquals('A', updateFridgeActual.getEnergy());
-        Assertions.assertEquals(ZonedDateTime.parse("2019-11-19T19:19:54+02"), updateFridgeActual.getRegistered());
+        Fridge fridge = fridgeService.saveFridge(fridgeTest);
+
+        Assertions.assertEquals("Samsung", fridge.getType());
+        Assertions.assertEquals("So so", fridge.getDescription());
+        Assertions.assertEquals(true, fridge.getDiscount());
+        Assertions.assertEquals(true, fridge.getDefect());
+        Assertions.assertEquals(BigDecimal.valueOf(1000.8), fridge.getPrice());
+        Assertions.assertEquals('A', fridge.getEnergy());
+        Assertions.assertEquals(ZonedDateTime.parse("2019-11-19T19:19:54+02"), fridge.getRegistered());
     }
 
     @Test

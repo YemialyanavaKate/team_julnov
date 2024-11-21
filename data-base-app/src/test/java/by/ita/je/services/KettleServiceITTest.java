@@ -60,6 +60,17 @@ class KettleServiceITTest extends TestUtils {
 
     @Test
     public void update_then_return_correct_kettle() {
+        Kettle kettleTest = Kettle.builder()
+                .number(4)
+                .type("steel")
+                .color("white")
+                .isElectric(true)
+                .isInduction(true)
+                .price(BigDecimal.valueOf(150.1))
+                .energy('A')
+                .registered(ZonedDateTime.parse("2011-11-11T11:11:11+02"))
+                .build();
+
         Kettle updateKettleTest = Kettle.builder()
                 .number(4)
                 .type("glass")
@@ -71,7 +82,7 @@ class KettleServiceITTest extends TestUtils {
                 .registered(ZonedDateTime.parse("2011-11-11T11:11:11+02"))
                 .build();
 
-        Kettle updateKettleActual = kettleService.updateKettle(updateKettleTest);
+        Kettle updateKettleActual = kettleService.updateKettle(kettleTest);
         Assertions.assertEquals("glass", updateKettleActual.getType());
         Assertions.assertEquals("pink", updateKettleActual.getColor());
         Assertions.assertEquals(true, updateKettleActual.getIsElectric());
