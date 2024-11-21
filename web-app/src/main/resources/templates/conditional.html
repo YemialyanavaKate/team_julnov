@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta content="text/html; charset=UTF-8" http-equiv="Content-Type">
+    <title>Home Page</title>
+</head>
+<body>
+<h1><strong>Hello!</strong></h1>
+<h2>Here you can add new entity by conditional for fridge</h2>
+<img th:src="@{/images/data.png}"/><br>
+
+<form th:action="@{/fridge/update}" method="post">
+
+    <label for="number">Enter number fridge:</label>
+    <input type="number" id="number" name="number"><br><br>
+
+    <label for="parameter">Enter conditional (number):</label>
+    <input type="number" id="parameter" name="parameter"><br><br>
+
+    <button type="submit">Update</button>
+</form>
+
+<a th:href="@{/fridge/home}" id="home">
+    <button type="button">Return to home page</button> </a>
+</body>
+</html>

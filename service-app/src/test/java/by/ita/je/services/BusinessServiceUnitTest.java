@@ -2,8 +2,6 @@ package by.ita.je.services;
 
 import by.ita.je.dto.to_data_base.FridgeDto;
 import by.ita.je.mapper.FridgeMapper;
-import by.ita.je.mapper.KettleMapper;
-import by.ita.je.mapper.MulticookerMapper;
 import by.ita.je.models.*;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -134,7 +132,35 @@ class BusinessServiceUnitTest {
         String urlFridgeReade = "http://127.0.0.1:8101/fridge/read/1";
         String urlFridgeUpdate = "http://127.0.0.1:8101/fridge/update/?number=1";
 
+        Integer number = 1;
+        Kettle kettle = Kettle.builder()
+                .type("glass")
+                .color("blue")
+                .isElectric(false)
+                .isInduction(false)
+                .price(BigDecimal.valueOf(30.33))
+                .energy('B')
+                .registered(ZonedDateTime.parse("2023-12-31T14:11:54+02"))
+                .build();
+
+        Multicooker multicooker = Multicooker.builder()
+                .type("Midea")
+                .description("So so")
+                .isTouchScreen(true)
+                .numberModes(91)
+                .price(BigDecimal.valueOf(1112))
+                .energy('A')
+                .registered(ZonedDateTime.parse("2019-11-29T19:19:54+02"))
+                .build();
+        List<Multicooker> multicookers = new ArrayList<>();
+        multicookers.add(multicooker);
+
         Fridge testfridge = Fridge.builder()
+                .Multicookers(multicookers)
+                .kettle(kettle)
+                .build();
+
+        Fridge testFridgeFromDataBase = Fridge.builder()
                 .type("integral")
                 .description("good fridge")
                 .discount(true)
@@ -144,6 +170,44 @@ class BusinessServiceUnitTest {
                 .Multicookers(Collections.emptyList())
                 .kettle(null)
                 .build();
+
+        Fridge testFridgeUpdate = Fridge.builder()
+                .type("integral")
+                .description("good fridge")
+                .discount(true)
+                .defect(false)
+                .price(BigDecimal.valueOf(2001))
+                .number(1)
+                .Multicookers(multicookers)
+                .kettle(kettle)
+                .build();
+
+        when(fridgeMapper.toEntityFromDataBase(restTemplate.getForObject(
+                        eq(urlFridgeReade),
+                        eq(FridgeDto.class)
+                ))
+        ).thenReturn(testFridgeFromDataBase);
+
+        Fridge actual = businessService.findFridgePlusKettleAndMulticooker(number, testfridge);
+        assertEquals(actual, testFridgeUpdate);
+
+        verify(restTemplate, new Times(1)).getForObject(
+                eq(urlFridgeReade),
+                eq(FridgeDto.class)
+        );
+
+        verify(restTemplate, new Times(1))
+                .exchange(urlFridgeUpdate,
+                        HttpMethod.PUT,
+                        new HttpEntity<>(testFridgeFromDataBase),
+                        Fridge.class
+                );
+    }
+
+    @Test
+    void findFridgePlusKettleAndMulticooker_then_trows_RestClientException() {
+
+        String urlFridgeReade = "http://127.0.0.1:8101/fridge/read/1";
 
         Kettle kettle = Kettle.builder()
                 .type("glass")
@@ -164,47 +228,13 @@ class BusinessServiceUnitTest {
                 .energy('A')
                 .registered(ZonedDateTime.parse("2019-11-29T19:19:54+02"))
                 .build();
-
         List<Multicooker> multicookers = new ArrayList<>();
         multicookers.add(multicooker);
 
-        Fridge testFridgeUpdate = Fridge.builder()
-                .type("integral")
-                .description("good fridge")
-                .discount(true)
-                .defect(false)
-                .price(BigDecimal.valueOf(2001))
-                .number(1)
+        Fridge testfridge = Fridge.builder()
                 .Multicookers(multicookers)
                 .kettle(kettle)
                 .build();
-
-        when(fridgeMapper.toEntityFromDataBase(restTemplate.getForObject(
-                        eq(urlFridgeReade),
-                        eq(FridgeDto.class)
-                ))
-        ).thenReturn(testfridge);
-
-        Fridge actual = businessService.findFridgePlusKettleAndMulticooker(testfridge.getNumber(), kettle, multicooker);
-        assertEquals(actual, testFridgeUpdate);
-
-        verify(restTemplate, new Times(1)).getForObject(
-                eq(urlFridgeReade),
-                eq(FridgeDto.class)
-        );
-
-        verify(restTemplate, new Times(1))
-                .exchange(urlFridgeUpdate,
-                        HttpMethod.PUT,
-                        new HttpEntity<>(testfridge),
-                        Fridge.class
-                );
-    }
-
-    @Test
-    void findFridgePlusKettleAndMulticooker_then_trows_RestClientException() {
-
-        String urlFridgeReade = "http://127.0.0.1:8101/fridge/read/1";
 
         when(restTemplate.getForObject(
                         eq(urlFridgeReade),
@@ -212,20 +242,12 @@ class BusinessServiceUnitTest {
                 )
         ).thenThrow(new RestClientException(""));
 
-        Assertions.assertThrows(RestClientException.class, () -> businessService.findFridgePlusKettleAndMulticooker(1, Kettle.builder().build(), Multicooker.builder().build()));
+        Assertions.assertThrows(RestClientException.class, () -> businessService.findFridgePlusKettleAndMulticooker(1, testfridge));
 
         verify(restTemplate, new Times(1)).getForObject(
                 eq(urlFridgeReade),
                 eq(FridgeDto.class)
         );
-        Fridge testfridge = Fridge.builder()
-                .type("integral")
-                .description("good fridge")
-                .discount(true)
-                .defect(false)
-                .price(BigDecimal.valueOf(2001))
-                .number(1)
-                .build();
 
         verify(restTemplate, new Times(0))
                 .exchange("http://127.0.0.1:8101/fridge/update/?number=" + testfridge.getNumber(),
@@ -234,7 +256,6 @@ class BusinessServiceUnitTest {
                         Fridge.class
                 );
     }
-
     @Test
     void findFridgePlusTVAndCountryByConditional() {
         String urlFridgeReade = "http://127.0.0.1:8101/fridge/read/1";

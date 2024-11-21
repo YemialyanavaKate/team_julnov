@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta content="text/html; charset=UTF-8" http-equiv="Content-Type">
+    <title>Search results</title>
+</head>
+<body>
+<h1><strong>Result your request</strong></h1>
+<h2><strong>Fridge</strong></h2>
+<table>
+    <tr>
+        <th>Type:</th>
+        <th>Description:</th>
+        <th>Discount:</th>
+        <th>Defect:</th>
+        <th>Price:</th>
+        <th>Number:</th>
+    </tr>
+    <tr>
+        <td th:text="${fridge.type}"></td>
+        <td th:text="${fridge.description}"></td>
+        <td th:text="${fridge.discount}"></td>
+        <td th:text="${fridge.defect}"></td>
+        <td th:text="${fridge.price}"></td>
+        <td th:text="${fridge.number}"></td>
+
+            <table>
+                <caption>Kettle</caption>
+                <tr>
+                    <th>Type:</th>
+                    <th>Color:</th>
+                    <th>IsElectric:</th>
+                    <th>IsInduction:</th>
+                    <th>Price:</th>
+                    <th>Number:</th>
+                </tr>
+                <tr>
+                    <td th:text="${fridge.kettleWebDto.type}"></td>
+                    <td th:text="${fridge.kettleWebDto.color}"></td>
+                    <td th:text="${fridge.kettleWebDto.isElectric}"></td>
+                    <td th:text="${fridge.kettleWebDto.isInduction}"></td>
+                    <td th:text="${fridge.kettleWebDto.price}"></td>
+                    <td th:text="${fridge.kettleWebDto.number}"></td>
+                </tr>
+            </table>
+
+            <table>
+                <caption>Multicooker</caption>
+                <tr>
+                    <th>Type:</th>
+                    <th>Description:</th>
+                    <th>IsTouchScreen:</th>
+                    <th>NumberModes:</th>
+                    <th>Price:</th>
+                    <th>Number:</th>
+                </tr>
+                <tr th:each="multicooker:${fridge.multicookerWebDtos}">
+                    <td th:text="${multicooker.type}"></td>
+                    <td th:text="${multicooker.description}"></td>
+                    <td th:text="${multicooker.isTouchScreen}"></td>
+                    <td th:text="${multicooker.numberModes}"></td>
+                    <td th:text="${multicooker.price}"></td>
+                    <td th:text="${multicooker.number}"></td>
+                </tr>
+            </table>
+    </tr>
+</table> <br><br>
+
+<a th:href="@{/fridge/read}" id="read">
+    <button type="button">Read another fridge</button> </a>
+<a th:href="@{/fridge/home}" id="home">
+    <button type="button">Return to home page</button> </a>
+</body>
+</html>

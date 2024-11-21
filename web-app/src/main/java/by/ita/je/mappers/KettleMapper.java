@@ -5,7 +5,7 @@ import by.ita.je.models.Kettle;
 import org.springframework.stereotype.Component;
 
 @Component
-public class KettleMapperToWebDto {
+public class KettleMapper {
 
     public KettleWebDto toWebDTO(Kettle kettle) {
         if (kettle == null) {
@@ -18,6 +18,19 @@ public class KettleMapperToWebDto {
                 .isInduction(kettle.getIsInduction())
                 .price(kettle.getPrice())
                 .number(kettle.getNumber())
+                .build();
+    }
+    public Kettle toEntity(KettleWebDto kettleWebDto) {
+        if (kettleWebDto == null) {
+            return null;
+        }
+        return Kettle.builder()
+                .type(kettleWebDto.getType())
+                .color(kettleWebDto.getColor())
+                .isElectric(kettleWebDto.getIsElectric())
+                .isInduction(kettleWebDto.getIsInduction())
+                .price(kettleWebDto.getPrice())
+                .number(kettleWebDto.getNumber())
                 .build();
     }
 }

@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta content="text/html; charset=UTF-8" http-equiv="Content-Type">
+    <title>Home Page</title>
+</head>
+<body>
+<h1><strong>Hello!</strong></h1>
+<h2>Here you can create a Fridge</h2>
+<img th:src="@{/images/fridge.png}"/><br>
+<a th:href="@{/fridge/create}" id="create">
+    <button type="button">Create fridge</button> </a><br><br>
+<a th:href="@{/fridge/read}" id="read">
+    <button type="button">Search fridge</button> </a><br><br>
+<a th:href="@{/fridge/add}" id="add">
+    <button type="button">Add information for fridge</button> </a><br><br>
+<a th:href="@{/fridge/update}" id="update">
+    <button type="button">Update fridge by conditional</button> </a><br><br>
+<a th:href="@{/fridge/delete}" id="delete">
+    <button type="button">Delete fridge</button> </a><br><br>
+</body>
+</html>

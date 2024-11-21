@@ -15,7 +15,9 @@
 <p><strong>Number:</strong> <span th:text="${fridge.number}"></span></p>
 
 <a th:href="@{/fridge/create}" id="create">
-    <button type="button">create another fridge</button>
+    <button type="button">Create another fridge</button><br><br>
+    <a th:href="@{/fridge/home}" id="home">
+        <button type="button">Return to home page</button> </a>
 </a>
 </body>
 </html>
