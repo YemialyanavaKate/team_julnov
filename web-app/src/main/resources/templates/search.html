@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta content="text/html; charset=UTF-8" http-equiv="Content-Type">
+    <title>Home Page</title>
+</head>
+<body>
+<h1><strong>Hello!</strong></h1>
+<h2>Here you can search a Fridge</h2>
+<img th:src="@{/images/binoculars.png}"/><br>
+
+<form th:action="@{/fridge/read}" method="post">
+
+    <label for="number">Enter number:</label>
+    <input type="text" id="number" name="number"><br><br>
+
+    <button type="submit">Search</button>
+</form>
+
+<a th:href="@{/fridge/home}" id="home">
+    <button type="button">Return to home page</button> </a>
+</body>
+</html>

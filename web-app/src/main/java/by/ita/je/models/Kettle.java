@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 import java.time.ZonedDateTime;
+import java.util.List;
 
 @Data
 @Builder
@@ -21,4 +22,7 @@ public class Kettle {
     private Integer number;
     private Character energy;
     private ZonedDateTime registered;
+
+    private List<Fridge> fridges;
+    private List<TV> listTV;
 }

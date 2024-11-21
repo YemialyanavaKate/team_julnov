@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta content="text/html; charset=UTF-8" http-equiv="Content-Type">
+    <title>Delete Page</title>
+</head>
+<body>
+<h1><strong>Delete fridge</strong></h1>
+<h2>Here you can delete Fridge</h2>
+<img th:src="@{/images/delete.png}"/><br>
+
+<form th:action="@{/fridge/delete}" method="post">
+
+    <label for="number">Enter number fridge that you want to delete:</label>
+    <input type="text" id="number" name="number"><br><br>
+
+    <button type="submit">Delete</button>
+</form>
+
+<a th:href="@{/fridge/home}" id="home">
+    <button type="button">Return to home page</button> </a>
+</body>
+</html>

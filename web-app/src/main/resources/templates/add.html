@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta content="text/html; charset=UTF-8" http-equiv="Content-Type">
+    <title>Add Page</title>
+</head>
+<body>
+<h1><strong>Add for fridge</strong></h1>
+<h2>Here you can add information (entity B and C) for a Fridge</h2>
+<img th:src="@{/images/add.png}"/><br>
+
+<form th:action="@{/fridge/add}" th:object="${fridge}" method="post">
+
+    <label for="number">Enter number fridge that you want to add infomation:</label>
+    <input type="number" id="number" name="number"><br><br>
+
+    <h2>Here you can add information about Kettle (entity B) for a Fridge</h2>
+
+    <label for="KettleType">Type:</label>
+    <input type="text" id="KettleType" th:field="*{kettleWebDto.type}"/><br><br>
+
+    <label for="KettleColor">Color:</label>
+    <input type="text" id="KettleColor" th:field="*{kettleWebDto.color}"/><br><br>
+
+    <label for="KettleIsElectric">IsElectric:</label>
+    <input type="text" id="KettleIsElectric" th:field="*{kettleWebDto.isElectric}"/><br><br>
+
+    <label for="KettleIsInduction">IsInduction:</label>
+    <input type="text" id="KettleIsInduction" th:field="*{kettleWebDto.isInduction}"/><br><br>
+
+    <label for="KettlePrice">Price:</label>
+    <input type="number" id="KettlePrice" th:field="*{kettleWebDto.price}"/><br><br>
+
+    <label for="KettleNumber">Number:</label>
+    <input type="number" id="KettleNumber" th:field="*{kettleWebDto.number}"/><br><br>
+
+    <h2>Here you can add information about Multicooker (entity C) for a Fridge</h2>
+<div>
+    <label for="type">Type:</label>
+    <input type="text" id="type" th:field="*{multicookerWebDtos[0].type}"/><br><br>
+
+    <label for="description">Description:</label>
+    <input type="text" id="description" th:field="*{multicookerWebDtos[0].description}"/><br><br>
+
+    <label for="isTouchScreen">IsTouchScreen:</label>
+    <input type="text" id="isTouchScreen" th:field="*{multicookerWebDtos[0].isTouchScreen}"/><br><br>
+
+    <label for="numberModes">NumberModes:</label>
+    <input type="number" id="numberModes" th:field="*{multicookerWebDtos[0].numberModes}"/><br><br>
+
+    <label for="multicookerPrice">Price:</label>
+    <input type="number" id="multicookerPrice" th:field="*{multicookerWebDtos[0].price}"/><br><br>
+
+    <label for="multicookerNumber">Number:</label>
+    <input type="number" id="multicookerNumber" th:field="*{multicookerWebDtos[0].number}"/><br><br>
+
+</div>
+
+    <button type="submit">Add</button>
+</form>
+
+<a th:href="@{/fridge/home}" id="home">
+    <button type="button">Return to home page</button> </a>
+</body>
+</html>

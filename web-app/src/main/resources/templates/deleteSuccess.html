@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta content="text/html; charset=UTF-8" http-equiv="Content-Type">
+    <title>Great</title>
+</head>
+<body>
+<h1>Fridge successfully deleted!</h1>
+
+<a th:href="@{/fridge/delete}" id="delete">
+    <button type="button">Delete another fridge</button><br><br>
+    <a th:href="@{/fridge/home}" id="home">
+        <button type="button">Return to home page</button> </a>
+</a>
+</body>
+</html>

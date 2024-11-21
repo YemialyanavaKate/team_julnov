@@ -80,11 +80,17 @@ class BusinessServiceIT {
                 .energy('B')
                 .registered(ZonedDateTime.parse("2024-01-01T10:23:54+02"))
                 .build();
-
         List<Multicooker> multicookers = new ArrayList<>();
         multicookers.add(multicooker);
 
         Fridge testfridge = Fridge.builder()
+                .Multicookers(multicookers)
+                .kettle(kettle)
+                .build();
+
+
+
+        Fridge testFridgeWithEntity = Fridge.builder()
                 .type("integral")
                 .description("good fridge")
                 .discount(true)
@@ -95,8 +101,8 @@ class BusinessServiceIT {
                 .kettle(kettle)
                 .build();
 
-        Fridge actualfridge = businessService.findFridgePlusKettleAndMulticooker(1, kettle, multicooker);
-        Assertions.assertEquals(actualfridge, testfridge);
+        Fridge actualfridge = businessService.findFridgePlusKettleAndMulticooker(1, testfridge);
+        Assertions.assertEquals(actualfridge, testFridgeWithEntity);
     }
 
     @Test

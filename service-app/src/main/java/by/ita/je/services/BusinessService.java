@@ -34,24 +34,25 @@ public class BusinessService {
         return fridgeMapper.toEntityFromDataBase(restTemplate.postForObject(urlFridgeCreate, fridgeDto, FridgeDto.class));
     }
 
-    public Fridge findFridgePlusKettleAndMulticooker(Integer number, Kettle kettle, Multicooker multicooker) {
+    public Fridge findFridgePlusKettleAndMulticooker(Integer number, Fridge fridge) {
+        Kettle kettle = fridge.getKettle();
+        List<Multicooker> multicookers = fridge.getMulticookers()
+                .stream()
+                .toList();
 
         String url = buildUrl(ROOT_FRIDGE, METOD_READ) + "/" + number;
 
-        Fridge fridge = fridgeMapper.toEntityFromDataBase(restTemplate.getForObject(url, FridgeDto.class));
-        List<Multicooker> multicookers = new ArrayList<>();
-        multicookers.add(multicooker);
+        Fridge fridgeFromDataBase = fridgeMapper.toEntityFromDataBase(restTemplate.getForObject(url, FridgeDto.class));
 
+        fridgeFromDataBase.setKettle(kettle);
+        fridgeFromDataBase.setMulticookers(multicookers);
 
-        fridge.setKettle(kettle);
-        fridge.setMulticookers(multicookers);
-
-        HttpEntity<Fridge> httpEntity = new HttpEntity<>(fridge);
+        HttpEntity<Fridge> httpEntity = new HttpEntity<>(fridgeFromDataBase);
         restTemplate.exchange(buildUrl(ROOT_FRIDGE, METOD_UPDATE) + "/?number=" + number,
                 HttpMethod.PUT,
                 httpEntity,
                 Fridge.class);
-        return fridge;
+        return fridgeFromDataBase;
     }
 
     public Fridge findFridgePlusTVAndCountryByConditional(Integer number, Integer parameter) {

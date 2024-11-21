@@ -1,6 +1,9 @@
 package by.ita.je.models;
 
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 import java.time.ZonedDateTime;
@@ -10,18 +13,17 @@ import java.util.List;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class Fridge {
+public class TV {
     private String type;
-    private String description;
+    private String brand;
     private Boolean discount;
-    private Boolean defect;
+    private Integer diagonal;
     private BigDecimal price;
     private Integer number;
     private Character energy;
     private ZonedDateTime registered;
 
-    //@ToString.Exclude
-    private List<Multicooker> Multicookers;
-    //@ToString.Exclude
-    private Kettle kettle;
+    private List<Kettle> kettles;
+
+    private Country country;
 }

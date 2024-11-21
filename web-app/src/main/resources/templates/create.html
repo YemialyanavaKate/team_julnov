@@ -28,7 +28,9 @@
     <label for="number">Number:</label>
     <input type="text" id="number" th:field="*{number}"/><br><br>
 
-    <button type="submit">Создать</button>
+    <button type="submit">Создать</button><br><br>
+    <a th:href="@{/fridge/home}" id="home">
+        <button type="button">Return to home page</button> </a>
 </form>
 </body>
 </html>

@@ -20,7 +20,6 @@ public class Fridge {
     private Character energy;
     private ZonedDateTime registered;
 
-    //@Singular
     private List<Multicooker> Multicookers;
     private Kettle kettle;
 }

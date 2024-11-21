@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta content="text/html; charset=UTF-8" http-equiv="Content-Type">
+    <title>Great</title>
+</head>
+<body>
+<h1>You added new information for fridge!</h1>
+<h2>Fridge</h2>
+<p><strong>Type:</strong> <span th:text="${fridge.type}"></span></p>
+<p><strong>Description:</strong> <span th:text="${fridge.description}"></span></p>
+<p><strong>Discount:</strong> <span th:text="${fridge.discount}"></span></p>
+<p><strong>Defect:</strong> <span th:text="${fridge.defect}"></span></p>
+<p><strong>Price:</strong> <span th:text="${fridge.price}"></span></p>
+<p><strong>Number:</strong> <span th:text="${fridge.number}"></span></p>
+
+<h3><strong>Kettle</strong></h3>
+<p><strong>Type:</strong> <span th:text="${fridge.kettleWebDto?.type}"></span></p>
+<p><strong>Color:</strong> <span th:text="${fridge.kettleWebDto?.color}"></span></p>
+<p><strong>IsElectric:</strong> <span th:text="${fridge.kettleWebDto?.isElectric}"></span></p>
+<p><strong>IsInduction:</strong> <span th:text="${fridge.kettleWebDto?.isInduction}"></span></p>
+<p><strong>Price:</strong> <span th:text="${fridge.kettleWebDto?.price}"></span></p>
+<p><strong>Number:</strong> <span th:text="${fridge.kettleWebDto?.number}"></span></p>
+
+<h3><strong>Multicooker</strong></h3>
+<div th:each="multicookerWebDto : ${fridge.multicookerWebDtos}">
+    <h4>multicookerWebDto <span th:text="${multicookerWebDto.number + 1}"></span></h4>
+    <p><strong>Type:</strong> <span th:text="${multicookerWebDto.type}"></span></p>
+    <p><strong>Description:</strong> <span th:text="${multicookerWebDto.description}"></span></p>
+    <p><strong>IsTouchScreen:</strong> <span th:text="${multicookerWebDto.isTouchScreen}"></span></p>
+    <p><strong>NumberModes:</strong> <span th:text="${multicookerWebDto.numberModes}"></span></p>
+    <p><strong>Price:</strong> <span th:text="${multicookerWebDto.price}"></span></p>
+    <p><strong>Number:</strong> <span th:text="${multicookerWebDto.number}"></span></p>
+</div>
+
+<a th:href="@{/fridge/add}" id="add">
+    <button type="button">Add more information for fridge</button><br><br>
+    <a th:href="@{/fridge/home}" id="home">
+        <button type="button">Return to home page</button> </a>
+</a>
+</body>
+</html>
