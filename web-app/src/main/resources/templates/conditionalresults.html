@@ -16,12 +16,12 @@
 <p><strong>Price:</strong> <span th:text="${fridge.price}"></span></p>
 <p><strong>Number:</strong> <span th:text="${fridge.number}"></span></p>
 <h3><strong>Kettle</strong></h3>
-<p><strong>Type:</strong> <span th:text="${fridge.kettleWebDto.type}"></span></p>
-<p><strong>Color:</strong> <span th:text="${fridge.kettleWebDto.color}"></span></p>
-<p><strong>IsElectric:</strong> <span th:text="${fridge.kettleWebDto.isElectric}"></span></p>
-<p><strong>IsInduction:</strong> <span th:text="${fridge.kettleWebDto.isInduction}"></span></p>
-<p><strong>Price:</strong> <span th:text="${fridge.kettleWebDto.price}"></span></p>
-<p><strong>Number:</strong> <span th:text="${fridge.kettleWebDto.number}"></span></p>
+<p><strong>Type:</strong> <span th:text="${fridge.kettleWebDto?.type}"></span></p>
+<p><strong>Color:</strong> <span th:text="${fridge.kettleWebDto?.color}"></span></p>
+<p><strong>IsElectric:</strong> <span th:text="${fridge.kettleWebDto?.isElectric}"></span></p>
+<p><strong>IsInduction:</strong> <span th:text="${fridge.kettleWebDto?.isInduction}"></span></p>
+<p><strong>Price:</strong> <span th:text="${fridge.kettleWebDto?.price}"></span></p>
+<p><strong>Number:</strong> <span th:text="${fridge.kettleWebDto?.number}"></span></p>
 
 <h3><strong>Multicooker</strong></h3>
 <div th:each="multicooker : ${fridge.multicookerWebDtos}">

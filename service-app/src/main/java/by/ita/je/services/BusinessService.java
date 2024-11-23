@@ -17,7 +17,7 @@ import java.util.function.Predicate;
 @Service
 @RequiredArgsConstructor
 public class BusinessService {
-    public static final String HOST_URL = "http://127.0.0.1:8101";
+    public static final String HOST_URL = "http://data-base-app:8101";
     public static final String ROOT_FRIDGE = "/fridge";
     public static final String METOD_READ = "/read";
     public static final String METOD_SAVE = "/save";
