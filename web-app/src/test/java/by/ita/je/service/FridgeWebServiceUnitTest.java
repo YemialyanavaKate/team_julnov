@@ -34,7 +34,7 @@ class FridgeWebServiceUnitTest {
 
     @Test
     void createFridgeDto() {
-        String url = "http://127.0.0.1:8111/business/fridge/create";
+        String url = "http://service-app:8111/business/fridge/create";
 
         Fridge testFridge = Fridge.builder()
                 .type("Samsung")
@@ -73,7 +73,7 @@ class FridgeWebServiceUnitTest {
 
     @Test
     void readFridge() {
-        String url = "http://127.0.0.1:8111/business/fridge/read/1";
+        String url = "http://service-app:8111/business/fridge/read/1";
         KettleWebDto kettleWebDto = KettleWebDto.builder()
                 .type("steel")
                 .color("white")
@@ -128,7 +128,7 @@ class FridgeWebServiceUnitTest {
 
     @Test
     void addKettleAndMulticooker() {
-        String urlFridgeUpdate = "http://127.0.0.1:8111/business/fridge/update?number=1";
+        String urlFridgeUpdate = "http://service-app:8111/business/fridge/update?number=1";
         Integer number = 1;
         List<Multicooker> multicookers = new ArrayList<>();
         Multicooker multicooker = Multicooker.builder().type("NewMulticooker").build();
@@ -188,7 +188,7 @@ class FridgeWebServiceUnitTest {
 
     @Test
     void findFridgeAndUpdateByConditional() {
-        String urlFridgeUpdate = "http://127.0.0.1:8111/business/fridge/update_conditional?number={number}&parameter={parameter}";
+        String urlFridgeUpdate = "http://service-app:8111/business/fridge/update_conditional?number={number}&parameter={parameter}";
 
         TV tv = TV.builder()
                 .type("LED")
@@ -270,7 +270,7 @@ class FridgeWebServiceUnitTest {
                 .kettleWebDto(kettleWebDto)
                 .build();
 
-        String url = "http://127.0.0.1:8111/business/fridge/read/1";
+        String url = "http://service-app:8111/business/fridge/read/1";
 
         when(serviceAppRestClient.getForObject(
                 eq(url),
@@ -299,7 +299,7 @@ class FridgeWebServiceUnitTest {
 
     @Test
     void deleteFridge() {
-        String url = "http://127.0.0.1:8111/business/fridge/delete/1";
+        String url = "http://service-app:8111/business/fridge/delete/1";
 
         fridgeWebService.deleteFridge(1);
         assertNull(fridgeWebService.readFridge(1));

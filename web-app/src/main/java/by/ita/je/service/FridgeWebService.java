@@ -13,7 +13,7 @@ public class FridgeWebService {
     private final RestTemplate serviceAppRestClient;
     private final FridgeMapper fridgeMapper;
 
-    public static final String HOST_URL = "http://127.0.0.1:8111";
+    public static final String HOST_URL = "http://service-app:8111";
     public static final String ROOT_FRIDGE = "/business/fridge";
     public static final String METOD_READ = "/read/";
     public static final String METOD_CREATE = "/create";

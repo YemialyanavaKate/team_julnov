@@ -1,11 +1,19 @@
 package by.ita.je.service;
 
+import by.ita.je.mappers.FridgeMapper;
+import by.ita.je.models.Fridge;
+import by.ita.je.webDto.FridgeWebDto;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.web.servlet.MockMvc;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -15,6 +23,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class FridgeControllerTest {
     @Autowired
     private MockMvc mockMvc;
+    @MockBean
+    FridgeMapper fridgeMapper;
+
+    @MockBean
+    FridgeWebService fridgeWebService;
 
     @Test
     public void testShowCreateForm() throws Exception {
@@ -26,6 +39,8 @@ public class FridgeControllerTest {
 
     @Test
     public void testCreateFridge() throws Exception {
+        Mockito.when(fridgeMapper.toWebDto(any())).thenReturn(FridgeWebDto.builder().build());
+        when(fridgeWebService.createFridgeDto(Fridge.builder().build())).thenReturn(Fridge.builder().build());
         mockMvc.perform(post("/fridge/create")
                         .param("type", "Test EntityFridge")
                         .param("description", "Test Description"))
@@ -43,6 +58,8 @@ public class FridgeControllerTest {
 
     @Test
     public void testReadFridge() throws Exception {
+        Mockito.when(fridgeMapper.toWebDto(any())).thenReturn(FridgeWebDto.builder().build());
+        Mockito.when(fridgeWebService.readFridge(any())).thenReturn(Fridge.builder().build());
         mockMvc.perform(post("/fridge/read")
                         .param("number", "1"))
                 .andExpect(status().isOk())
@@ -59,6 +76,8 @@ public class FridgeControllerTest {
 
     @Test
     public void testAddFridge() throws Exception {
+        Mockito.when(fridgeMapper.toWebDto(any())).thenReturn(FridgeWebDto.builder().build());
+        Mockito.when(fridgeWebService.addKettleAndMulticooker(any(), eq(Fridge.builder().build()))).thenReturn(Fridge.builder().build());
         String requestBody = "{\\\"kettleWebDto\\\": {\\\"type\\\": \\\"steel\\\"}";
         mockMvc.perform(post("/fridge/add")
                         .param("number", "1")
@@ -78,6 +97,8 @@ public class FridgeControllerTest {
 
     @Test
     public void testUpdateByConditionalFridge() throws Exception {
+        Mockito.when(fridgeMapper.toWebDto(any())).thenReturn(FridgeWebDto.builder().build());
+        Mockito.when(fridgeWebService.findFridgeAndUpdateByConditional(any(),any())).thenReturn(Fridge.builder().build());
         String requestBody = "{{\n" +
                 "    \"number\": 1,\n" +
                 "    \"parameter\": 3\n" +
