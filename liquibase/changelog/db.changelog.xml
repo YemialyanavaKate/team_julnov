@@ -1,0 +1,393 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd">
+
+    <changeSet id="1" author="user">
+        <createTable tableName="fridge">
+            <column name="number" type="INT" autoIncrement="true">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="type" type="VARCHAR(255)"/>
+            <column name="description" type="VARCHAR(255)"/>
+            <column name="discount" type="BOOLEAN"/>
+            <column name="defect" type="BOOLEAN"/>
+            <column name="price" type="DECIMAL"/>
+            <column name="energy" type="CHAR(255)"/>
+            <column name="registered" type="TIMESTAMP WITH TIME ZONE"/>
+            <column name="kettle_number" type="INT"/>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="2" author="user">
+        <createTable tableName="kettle">
+            <column name="number" type="INT">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="type" type="VARCHAR(255)"/>
+            <column name="color" type="VARCHAR(255)"/>
+            <column name="iselectric" type="BOOLEAN"/>
+            <column name="isinduction" type="BOOLEAN"/>
+            <column name="price" type="DECIMAL"/>
+            <column name="energy" type="CHAR (255)"/>
+            <column name="registered" type="TIMESTAMP WITH TIME ZONE"/>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="3" author="user">
+        <createTable tableName="multicooker">
+            <column name="number" type="INT">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="type" type="VARCHAR(255)"/>
+            <column name="description" type="VARCHAR(255)"/>
+            <column name="istouchscreen" type="BOOLEAN"/>
+            <column name="numbermodes" type="INT"/>
+            <column name="price" type="DECIMAL"/>
+            <column name="energy" type="CHAR (255)"/>
+            <column name="registered" type="TIMESTAMP WITH TIME ZONE"/>
+            <column name="fridge_number" type="INT"/>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="4" author="user">
+        <createTable tableName="tv">
+            <column name="number" type="INT">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="type" type="VARCHAR(255)"/>
+            <column name="brand" type="VARCHAR(255)"/>
+            <column name="discount" type="BOOLEAN"/>
+            <column name="diagonal" type="INT"/>
+            <column name="price" type="DECIMAL"/>
+            <column name="energy" type="CHAR (255)"/>
+            <column name="registered" type="TIMESTAMP WITH TIME ZONE"/>
+            <column name="country_id" type="INT"/>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="5" author="user">
+        <createTable tableName="country">
+            <column name="id" type="INT">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="country" type="INT"/>
+            <column name="tv_number" type="INT"/>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="6" author="user">
+        <createTable tableName="kttl_tv">
+            <column name="kttl_number" type="INT"/>
+            <column name="tv_number" type="INT"/>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="7" author="user">
+        <insert tableName="fridge">
+            <column name="number" value="1"/>
+            <column name="type" value="integral"/>
+            <column name="description" value="good fridge"/>
+            <column name="discount" value="true"/>
+            <column name="defect" value="false"/>
+            <column name="price" value="2000.5"/>
+            <column name="energy" value="A"/>
+            <column name="registered" value="2004-10-19 10:23:54+02"/>
+            <column name="kettle_number" value="4"/>
+        </insert>
+
+        <insert tableName="fridge">
+            <column name="number" value="2"/>
+            <column name="type" value="noFrost"/>
+            <column name="description" value="OK fridge"/>
+            <column name="discount" value="false"/>
+            <column name="defect" value="true"/>
+            <column name="price" value="2500.5"/>
+            <column name="energy" value="B"/>
+            <column name="registered" value="2024-08-19 10:23:54+02"/>
+            <column name="kettle_number" value="3"/>
+        </insert>
+
+        <insert tableName="fridge">
+            <column name="number" value="3"/>
+            <column name="type" value="2Doоr"/>
+            <column name="description" value="The best fridge"/>
+            <column name="discount" value="true"/>
+            <column name="defect" value="true"/>
+            <column name="price" value="3500.5"/>
+            <column name="energy" value="B"/>
+            <column name="registered" value="2024-08-01 11:30:54+02"/>
+            <column name="kettle_number" value="3"/>
+        </insert>
+
+        <insert tableName="fridge">
+            <column name="number" value="4"/>
+            <column name="type" value="BigBig"/>
+            <column name="description" value="Big fridge"/>
+            <column name="discount" value="false"/>
+            <column name="defect" value="false"/>
+            <column name="price" value="5000.5"/>
+            <column name="energy" value="C"/>
+            <column name="registered" value="2023-01-01 18:00:54+02"/>
+            <column name="kettle_number" value="1"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="8" author="user">
+        <insert tableName="kettle">
+            <column name="number" value="1"/>
+            <column name="type" value="steel"/>
+            <column name="color" value="silver"/>
+            <column name="iselectric" value="true"/>
+            <column name="isinduction" value="false"/>
+            <column name="price" value="50.8"/>
+            <column name="energy" value="A"/>
+            <column name="registered" value="2023-10-19 10:23:54+02"/>
+        </insert>
+
+        <insert tableName="kettle">
+            <column name="number" value="2"/>
+            <column name="type" value="glass"/>
+            <column name="color" value="notColor"/>
+            <column name="iselectric" value="false"/>
+            <column name="isinduction" value="false"/>
+            <column name="price" value="80.5"/>
+            <column name="energy" value="B"/>
+            <column name="registered" value="2023-12-31 14:11:54+02"/>
+        </insert>
+
+        <insert tableName="kettle">
+            <column name="number" value="3"/>
+            <column name="type" value="steel"/>
+            <column name="color" value="black"/>
+            <column name="iselectric" value="true"/>
+            <column name="isinduction" value="true"/>
+            <column name="price" value="100.99"/>
+            <column name="energy" value="A"/>
+            <column name="registered" value="2024-10-19 10:23:54+02"/>
+        </insert>
+
+        <insert tableName="kettle">
+            <column name="number" value="4"/>
+            <column name="type" value="steel"/>
+            <column name="color" value="white"/>
+            <column name="iselectric" value="true"/>
+            <column name="isinduction" value="false"/>
+            <column name="price" value="150.1"/>
+            <column name="energy" value="B"/>
+            <column name="registered" value="2024-01-01 20:23:54+02"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="9" author="user">
+        <insert tableName="multicooker">
+            <column name="number" value="1"/>
+            <column name="type" value="RemovablePanels"/>
+            <column name="description" value="for breakfast"/>
+            <column name="istouchscreen" value="true"/>
+            <column name="numbermodes" value="15001"/>
+            <column name="price" value="50.8"/>
+            <column name="energy" value="A"/>
+            <column name="registered" value="2023-10-19 10:23:54+02"/>
+            <column name="fridge_number" value="2"/>
+        </insert>
+
+        <insert tableName="multicooker">
+            <column name="number" value="2"/>
+            <column name="type" value="NonRemovablePanels"/>
+            <column name="description" value="for sweet"/>
+            <column name="istouchscreen" value="false"/>
+            <column name="numbermodes" value="20001"/>
+            <column name="price" value="99.8"/>
+            <column name="energy" value="B"/>
+            <column name="registered" value="2024-05-11 23:23:54+02"/>
+            <column name="fridge_number" value="2"/>
+        </insert>
+
+        <insert tableName="multicooker">
+            <column name="number" value="3"/>
+            <column name="type" value="RemovablePanels"/>
+            <column name="description" value="for breakfast"/>
+            <column name="istouchscreen" value="true"/>
+            <column name="numbermodes" value="10000"/>
+            <column name="price" value="70.3"/>
+            <column name="energy" value="A"/>
+            <column name="registered" value="2024-03-19 10:23:54+02"/>
+            <column name="fridge_number" value="3"/>
+        </insert>
+
+        <insert tableName="multicooker">
+            <column name="number" value="4"/>
+            <column name="type" value="NonRemovablePanels"/>
+            <column name="description" value="for sweet"/>
+            <column name="istouchscreen" value="true"/>
+            <column name="numbermodes" value="5000"/>
+            <column name="price" value="78.5"/>
+            <column name="energy" value="A"/>
+            <column name="registered" value="2023-12-29 10:23:54+02"/>
+            <column name="fridge_number" value="3"/>
+        </insert>
+
+    </changeSet>
+
+    <changeSet id="10" author="user">
+        <insert tableName="tv">
+            <column name="number" value="1"/>
+            <column name="type" value="LCD"/>
+            <column name="brand" value="LG"/>
+            <column name="discount" value="true"/>
+            <column name="diagonal" value="40"/>
+            <column name="price" value="5000.88"/>
+            <column name="energy" value="A"/>
+            <column name="registered" value="2024-07-20 22:23:54+02"/>
+            <column name="country_id" value="2"/>
+        </insert>
+
+        <insert tableName="tv">
+            <column name="number" value="2"/>
+            <column name="type" value="LED"/>
+            <column name="brand" value="Samsung"/>
+            <column name="discount" value="false"/>
+            <column name="diagonal" value="38"/>
+            <column name="price" value="4000.99"/>
+            <column name="energy" value="B"/>
+            <column name="registered" value="2024-02-23 22:50:54+02"/>
+            <column name="country_id" value="3"/>
+        </insert>
+
+        <insert tableName="tv">
+            <column name="number" value="3"/>
+            <column name="type" value="OLED"/>
+            <column name="brand" value="Sony"/>
+            <column name="discount" value="false"/>
+            <column name="diagonal" value="36"/>
+            <column name="price" value="3501.09"/>
+            <column name="energy" value="B"/>
+            <column name="registered" value="2023-12-23 22:50:54+02"/>
+            <column name="country_id" value="1"/>
+        </insert>
+
+        <insert tableName="tv">
+            <column name="number" value="4"/>
+            <column name="type" value="Plasma"/>
+            <column name="brand" value="Panasonic"/>
+            <column name="discount" value="true"/>
+            <column name="diagonal" value="32"/>
+            <column name="price" value="1999.01"/>
+            <column name="energy" value="A"/>
+            <column name="registered" value="2023-05-13 07:50:54+02"/>
+            <column name="country_id" value="4"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="11" author="user">
+        <insert tableName="country">
+            <column name="id" value="1"/>
+            <column name="country" value="1"/>
+            <column name="tv_number" value="3"/>
+        </insert>
+
+        <insert tableName="country">
+            <column name="id" value="2"/>
+            <column name="country" value="2"/>
+            <column name="tv_number" value="1"/>
+        </insert>
+
+        <insert tableName="country">
+            <column name="id" value="3"/>
+            <column name="country" value="3"/>
+            <column name="tv_number" value="2"/>
+        </insert>
+
+        <insert tableName="country">
+            <column name="id" value="4"/>
+            <column name="country" value="4"/>
+            <column name="tv_number" value="4"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="12" author="user">
+        <insert tableName="kttl_tv">
+            <column name="kttl_number" value="1"/>
+            <column name="tv_number" value="4"/>
+        </insert>
+
+        <insert tableName="kttl_tv">
+            <column name="kttl_number" value="2"/>
+            <column name="tv_number" value="3"/>
+        </insert>
+
+        <insert tableName="kttl_tv">
+            <column name="kttl_number" value="3"/>
+            <column name="tv_number" value="1"/>
+        </insert>
+
+        <insert tableName="kttl_tv">
+            <column name="kttl_number" value="4"/>
+            <column name="tv_number" value="2"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="13" author="user">
+        <addForeignKeyConstraint
+                baseTableName="fridge"
+                baseColumnNames="kettle_number"
+                constraintName="fk_fridge_kettle"
+                referencedTableName="kettle"
+                referencedColumnNames="number"
+                onDelete="CASCADE"
+                onUpdate="CASCADE"/>
+    </changeSet>
+
+    <changeSet id="14" author="user">
+        <addForeignKeyConstraint
+                baseTableName="multicooker"
+                baseColumnNames="fridge_number"
+                constraintName="fk_multicooker_fridge_"
+                referencedTableName="fridge"
+                referencedColumnNames="number"
+                onDelete="CASCADE"
+                onUpdate="CASCADE"/>
+    </changeSet>
+
+    <changeSet id="15" author="user">
+        <addForeignKeyConstraint
+                baseTableName="country"
+                baseColumnNames="tv_number"
+                constraintName="fk_country_tv"
+                referencedTableName="tv"
+                referencedColumnNames="number"
+                onDelete="CASCADE"
+                onUpdate="CASCADE"/>
+    </changeSet>
+    <changeSet id="16" author="user">
+        <addPrimaryKey
+                tableName="kttl_tv"
+                columnNames="kttl_number, tv_number"
+                constraintName="primary_key"/>
+    </changeSet>
+
+    <changeSet id="17" author="user">
+        <addForeignKeyConstraint
+                baseTableName="kttl_tv"
+                baseColumnNames="kttl_number"
+                constraintName="fk_kttl_tv_kettle"
+                referencedTableName="kettle"
+                referencedColumnNames="number"
+                onUpdate="CASCADE"
+                onDelete="CASCADE"/>
+    </changeSet>
+
+    <changeSet id="18" author="user">
+        <addForeignKeyConstraint
+                baseTableName="kttl_tv"
+                baseColumnNames="tv_number"
+                constraintName="fk_kttl_tv_tv_"
+                referencedTableName="tv"
+                referencedColumnNames="number"
+                onDelete="CASCADE"
+                onUpdate="CASCADE"/>
+    </changeSet>
+</databaseChangeLog>
