@@ -13,8 +13,8 @@ public class FridgeWebService {
     private final RestTemplate serviceAppRestClient;
     private final FridgeMapper fridgeMapper;
 
-    public static final String HOST_URL = "http://service-app:8111";
-    public static final String ROOT_FRIDGE = "/business/fridge";
+    public static final String HOST_URL = "http://nginx/business";
+    public static final String ROOT_FRIDGE = "/fridge";
     public static final String METOD_READ = "/read/";
     public static final String METOD_CREATE = "/create";
     public static final String METOD_UPDATE_CONDITIONAL = "/update_conditional?number={number}&parameter={parameter}";

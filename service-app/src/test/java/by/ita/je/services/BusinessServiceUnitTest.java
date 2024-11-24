@@ -37,7 +37,7 @@ class BusinessServiceUnitTest {
 
     @Test
     void create() {
-        String urlFridgeCreate = "http://data-base-app:8101/fridge/save";
+        String urlFridgeCreate = "http://nginx/database/fridge/save";
 
         Fridge testfridge = Fridge.builder()
                 .type("Samsung")
@@ -83,7 +83,7 @@ class BusinessServiceUnitTest {
 
     @Test
     void create_then_trows_RestClientException() {
-        String urlFridgeCreate = "http://data-base-app:8101/fridge/save";
+        String urlFridgeCreate = "http://nginx/database/fridge/save";
 
         Fridge testfridge = Fridge.builder()
                 .type("Samsung")
@@ -129,8 +129,8 @@ class BusinessServiceUnitTest {
 
     @Test
     void findFridgePlusKettleAndMulticooker() {
-        String urlFridgeReade = "http://data-base-app:8101/fridge/read/1";
-        String urlFridgeUpdate = "http://data-base-app:8101/fridge/update/?number=1";
+        String urlFridgeReade = "http://nginx/database/fridge/read/1";
+        String urlFridgeUpdate = "http://nginx/database/fridge/update/?number=1";
 
         Integer number = 1;
         Kettle kettle = Kettle.builder()
@@ -207,7 +207,7 @@ class BusinessServiceUnitTest {
     @Test
     void findFridgePlusKettleAndMulticooker_then_trows_RestClientException() {
 
-        String urlFridgeReade = "http://data-base-app:8101/fridge/read/1";
+        String urlFridgeReade = "http://nginx/database/fridge/read/1";
 
         Kettle kettle = Kettle.builder()
                 .type("glass")
@@ -250,7 +250,7 @@ class BusinessServiceUnitTest {
         );
 
         verify(restTemplate, new Times(0))
-                .exchange("http://data-base-app:8101/fridge/update/?number=" + testfridge.getNumber(),
+                .exchange("http://nginx/database/fridge/update/?number=" + testfridge.getNumber(),
                         HttpMethod.PUT,
                         new HttpEntity<>(testfridge),
                         Fridge.class
@@ -258,8 +258,8 @@ class BusinessServiceUnitTest {
     }
     @Test
     void findFridgePlusTVAndCountryByConditional() {
-        String urlFridgeReade = "http://data-base-app:8101/fridge/read/1";
-        String urlFridgeUpdate = "http://data-base-app:8101/fridge/update/?number=1";
+        String urlFridgeReade = "http://nginx/database/fridge/read/1";
+        String urlFridgeUpdate = "http://nginx/database/fridge/update/?number=1";
 
 
         Fridge testfridge = Fridge.builder()
@@ -309,8 +309,8 @@ class BusinessServiceUnitTest {
 
     @Test
     void findFridgePlusTVAndCountryByConditional_then_trows_RestClientException() {
-        String urlFridgeReade = "http://data-base-app:8101/fridge/read/1";
-        String urlFridgeUpdate = "http://data-base-app:8101/fridge/update/?number=1";
+        String urlFridgeReade = "http://nginx/database/fridge/read/1";
+        String urlFridgeUpdate = "http://nginx/database/fridge/update/?number=1";
 
         Fridge testfridge = Fridge.builder()
                 .type("integral")
@@ -355,7 +355,7 @@ class BusinessServiceUnitTest {
 
     @Test
     void findFridge() {
-        String urlFridgeReade = "http://data-base-app:8101/fridge/read/1";
+        String urlFridgeReade = "http://nginx/database/fridge/read/1";
 
         Kettle kettle = Kettle.builder()
                 .type("steel")
@@ -395,9 +395,9 @@ class BusinessServiceUnitTest {
 
     @Test
     void findFridgeAndDelete() {
-        String urlFridgeReade = "http://data-base-app:8101/fridge/read/1";
+        String urlFridgeReade = "http://nginx/database/fridge/read/1";
 
-        String urlFridgeDelete = "http://data-base-app:8101/fridge/delete/?number=1";
+        String urlFridgeDelete = "http://nginx/database/fridge/delete/?number=1";
 
         Fridge testfridge = Fridge.builder()
                 .type("integral")

@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping(path = "/multicooker")
+@RequestMapping(path = "/database/multicooker")
 public class MulticookerController {
     private final MulticookerService multicookerService;
     private final MulticookerMapperToDto multicookerMapper;

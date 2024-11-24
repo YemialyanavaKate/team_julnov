@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping(path = "/kettle")
+@RequestMapping(path = "/database/kettle")
 public class KettleController {
     private final KettleService kettleService;
     private final KettleMapperToDto kettleMapper;
