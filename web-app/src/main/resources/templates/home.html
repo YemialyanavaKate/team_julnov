@@ -19,5 +19,8 @@
     <button type="button">Update fridge by conditional</button> </a><br><br>
 <a th:href="@{/fridge/delete}" id="delete">
     <button type="button">Delete fridge</button> </a><br><br>
+<form th:action="@{/login(logout=true)}" method="post">
+    <button type="submit">Log out</button>
+</form>
 </body>
 </html>
