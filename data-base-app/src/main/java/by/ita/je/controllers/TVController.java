@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping(path = "/tv")
+@RequestMapping(path = "/database/tv")
 public class TVController {
 
     private final TVService tvService;

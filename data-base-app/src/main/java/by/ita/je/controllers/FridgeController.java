@@ -13,7 +13,7 @@ import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @RestController
-@RequestMapping(path = "/fridge")
+@RequestMapping(path = "/database/fridge")
 public class FridgeController {
     private final FridgeService fridgeService;
     private final FridgeMapperToDto fridgeMapper;
