@@ -15,6 +15,10 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void  configure(HttpSecurity httpSecurity) throws Exception{
         httpSecurity.authorizeRequests()
+                .antMatchers("/admin/**")
+                .hasRole("ADMIN")
+                .antMatchers("/client/**")
+                .hasRole("CLIENT")
                 .anyRequest()
                 .authenticated()
                 .and()
@@ -32,8 +36,13 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         manager.createUser(User.withDefaultPasswordEncoder()
                 .username("admin")
                 .password("admin123")
-                        .roles("USER")
-                .build());
+                        .roles("ADMIN")
+                        .build());
+        manager.createUser(User.withDefaultPasswordEncoder()
+                .username("client")
+                .password("client123")
+                        .roles("CLIENT")
+                        .build());
         return manager;
     }
 }
