@@ -5,6 +5,8 @@ services:
     build: ./web-app
     ports:
       - "8091:8091"
+    environment:
+      - SPRING_PROFILES_ACTIVE=prod
     depends_on:
       - service-app-1
       - service-app-2
@@ -13,8 +15,6 @@ services:
 
   service-app-1:
     build: ./service-app
-    ports:
-      - "8211:8111"
     depends_on:
       - data-base-app-1
     networks:
@@ -22,8 +22,6 @@ services:
 
   service-app-2:
     build: ./service-app
-    ports:
-      - "8311:8111"
     depends_on:
       - data-base-app-2
     networks:
@@ -31,15 +29,11 @@ services:
 
   data-base-app-1:
     build: ./data-base-app
-    ports:
-      - "8201:8101"
     networks:
       - app-network
 
   data-base-app-2:
     build: ./data-base-app
-    ports:
-      - "8301:8101"
     networks:
       - app-network
 
